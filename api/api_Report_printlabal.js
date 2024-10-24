@@ -82,10 +82,10 @@ router.get(
     try {
       var result = [[]];
       const { model, Line, startDate, finishDate, confirm } = req.params;
-      if (model === '**ALL**' && Line ==='**ALL**'&& confirm !== 'OK') {
+      if (model === '**ALL**' && Line ==='**ALL**') {
         // เงื่อนไขที่ 3
         var result = await user.sequelize.query(` 
-        -- model === '**ALL**' && Line ==='**ALL**'&& confirm !== 'OK'
+        -- model === '**ALL**' && Line ==='**ALL**'
         with Data as (SELECT
           [Model_name]
           ,[Model_ID]
@@ -129,21 +129,14 @@ router.get(
     and YEAR([Record_request].[TimeStamp]) !='2565'
     and [Status]!='Deleted' and [Qty] > 10
     
-    )
-    --ALL--and  [Model_name]='**ALL**'
-    --ALL--and [Line_for_QRcode].Line ='**ALL**'
-    
- 
-    --date between '${startDate}' and ' ${finishDate}'            
-    --and Model_name ='${model}'                                                          
-    --and Line = '${Line}'                                
-    --and Confirmation='${confirm}'    
+    )   
     select * from Data
     where    
-    Confirmation='${confirm}'         
+    Confirmation='${confirm}' 
+    and date between '${startDate}' and ' ${finishDate}'        
     order by convert(date,[TimeStamp])
     `)
-    } else if (model === '**ALL**' && Line !=='**ALL**'&& confirm === 'OK') {
+    } else if (model === '**ALL**' && Line !=='**ALL**') {
         // เงื่อนไขที่ 2
         var result = await user.sequelize.query(`  
         with Data as (SELECT
@@ -190,142 +183,14 @@ router.get(
     and [Status]!='Deleted' and [Qty] > 10
 
     )
-    --ALL--and  [Model_name]='**ALL**'
-    --ALL--and [Line_for_QRcode].Line ='**ALL**'
-    
- 
-    --date between '${startDate}' and ' ${finishDate}'            
-    --and Model_name ='${model}'                                                          
-    --and Line = '${Line}'                                
-    --and Confirmation='${confirm}'    
+   
     select * from Data
     where 
     date between '${startDate}' and ' ${finishDate}'      
     and Line = '${Line}' 
     and Confirmation='${confirm}'          
     order by convert(date,[TimeStamp])`)
-    } else if (model === '**ALL**' && Line !=='**ALL**'&& confirm !== 'OK') {
-
-        // เงื่อนไขที่ 4
-        var result = await user.sequelize.query(`  
-        with Data as (SELECT
-          [Model_name]
-          ,[Model_ID]
-          ,[Motor]
-          ,[Revision]
-          ,[WW]
-          ,[Ramp]
-          ,[Ramp_ID]
-          ,[CrashStop]
-          ,[CrashStop_ID]
-          ,[Base]
-          ,[Base_ID]
-          ,'L'+[Record_request].[Line] as [CODE_Line]
-         ,[Line_for_QRcode].Line as Line
-          ,[MSH_name]
-          ,[MSH_ID]
-          ,[Qty]
-          ,[Record_request].[TimeStamp]
-          ,[Requester]
-          ,[Tray]
-          ,[Tray_Qty]
-          ,[Status]
-          ,[[Diverter/Airdam]
-          ,[Stack]
-          ,[Temperature]
-          ,[Order_Number]
-          ,[Time_Alarm]
-         ,CASE
-     WHEN [Record_request].[Confirmation] IS NULL THEN 'wait_confirm'
-     ELSE [Record_request].[Confirmation]
-    END AS Confirmation
-          ,[User_Confirm]
-          ,[Receiver]
-        ,convert(date,[Record_request].[TimeStamp]) as date
-        FROM [LinkedServer1].[LabelPrintRequest].[dbo].[Record_request]
-        JOIN [Temp_TransportData].[dbo].[Line_for_QRcode]
-            ON [Line_for_QRcode].Label_Digit15 = [Record_request].[Motor]
-            AND [Line_for_QRcode].Item_no = [Record_request].Model_ID
-            AND [Record_request].Line = [Line_for_QRcode].Label_Digit23
-      where convert(date,[Record_request].[TimeStamp]) > '2023-07-17'
-    and YEAR([Record_request].[TimeStamp]) !='2565'
-    and [Status]!='Deleted' and [Qty] > 10
-    )
-    --ALL--and  [Model_name]='**ALL**'
-    --ALL--and [Line_for_QRcode].Line ='**ALL**'
-    
- 
-    --date between '${startDate}' and ' ${finishDate}'            
-    --and Model_name ='${model}'                                                          
-    --and Line = '${Line}'                                
-    --and Confirmation='${confirm}'    
-    select * from Data
-    where 
-    Line = '${Line}' 
-    and Confirmation='${confirm}'          
-    order by convert(date,[TimeStamp])`)
-
-    } else if (model !== '**ALL**' && Line ==='**ALL**'&& confirm === 'OK') {
-        // เงื่อนไขที่ 5
-        var result = await user.sequelize.query(`  
-        with Data as (SELECT
-          [Model_name]
-          ,[Model_ID]
-          ,[Motor]
-          ,[Revision]
-          ,[WW]
-          ,[Ramp]
-          ,[Ramp_ID]
-          ,[CrashStop]
-          ,[CrashStop_ID]
-          ,[Base]
-          ,[Base_ID]
-          ,'L'+[Record_request].[Line] as [CODE_Line]
-         ,[Line_for_QRcode].Line as Line
-          ,[MSH_name]
-          ,[MSH_ID]
-          ,[Qty]
-          ,[Record_request].[TimeStamp]
-          ,[Requester]
-          ,[Tray]
-          ,[Tray_Qty]
-          ,[Status]
-          ,[[Diverter/Airdam]
-          ,[Stack]
-          ,[Temperature]
-          ,[Order_Number]
-          ,[Time_Alarm]
-         ,CASE
-     WHEN [Record_request].[Confirmation] IS NULL THEN 'wait_confirm'
-     ELSE [Record_request].[Confirmation]
-    END AS Confirmation
-          ,[User_Confirm]
-          ,[Receiver]
-        ,convert(date,[Record_request].[TimeStamp]) as date
-        FROM [LinkedServer1].[LabelPrintRequest].[dbo].[Record_request]
-        JOIN [Temp_TransportData].[dbo].[Line_for_QRcode]
-            ON [Line_for_QRcode].Label_Digit15 = [Record_request].[Motor]
-            AND [Line_for_QRcode].Item_no = [Record_request].Model_ID
-            AND [Record_request].Line = [Line_for_QRcode].Label_Digit23
-      where convert(date,[Record_request].[TimeStamp]) > '2023-07-17'
-    and YEAR([Record_request].[TimeStamp]) !='2565'
-    and [Status]!='Deleted' and [Qty] > 10
-    )
-    --ALL--and  [Model_name]='**ALL**'
-    --ALL--and [Line_for_QRcode].Line ='**ALL**'
-    
- 
-    --date between '${startDate}' and ' ${finishDate}'            
-    --and Model_name ='${model}'                                                          
-    --and Line = '${Line}'                                
-    --and Confirmation='${confirm}'    
-    select * from Data
-    where 
-    date between '${startDate}' and ' ${finishDate}'            
-    and Model_name ='${model}'  
-    and Confirmation='${confirm}'          
-    order by convert(date,[TimeStamp])`)
-    } else if (model !== '**ALL**' && Line ==='**ALL**'&& confirm !== 'OK') {
+  } else if (model !== '**ALL**' && Line ==='**ALL**') {
         // เงื่อนไขที่ 6
         var result = await user.sequelize.query(`  
         with Data as (SELECT
@@ -371,143 +236,15 @@ router.get(
     and YEAR([Record_request].[TimeStamp]) !='2565'
     and [Status]!='Deleted' and [Qty] > 10
     )
-    --ALL--and  [Model_name]='**ALL**'
-    --ALL--and [Line_for_QRcode].Line ='**ALL**'
-    
- 
-    --date between '${startDate}' and ' ${finishDate}'            
-    --and Model_name ='${model}'                                                          
-    --and Line = '${Line}'                                
-    --and Confirmation='${confirm}'    
+     
     select * from Data
     where 
                
     Model_name ='${model}'  
-    and Confirmation='${confirm}'          
+    and Confirmation='${confirm}'  
+    and date between '${startDate}' and ' ${finishDate}'        
     order by convert(date,[TimeStamp])`)
-    } else if (model !== '**ALL**' && Line !=='**ALL**'&& confirm === 'OK') {
-        // เงื่อนไขที่ 7
-        var result = await user.sequelize.query(`  
-        with Data as (SELECT
-          [Model_name]
-          ,[Model_ID]
-          ,[Motor]
-          ,[Revision]
-          ,[WW]
-          ,[Ramp]
-          ,[Ramp_ID]
-          ,[CrashStop]
-          ,[CrashStop_ID]
-          ,[Base]
-          ,[Base_ID]
-          ,'L'+[Record_request].[Line] as [CODE_Line]
-         ,[Line_for_QRcode].Line as Line
-          ,[MSH_name]
-          ,[MSH_ID]
-          ,[Qty]
-          ,[Record_request].[TimeStamp]
-          ,[Requester]
-          ,[Tray]
-          ,[Tray_Qty]
-          ,[Status]
-          ,[[Diverter/Airdam]
-          ,[Stack]
-          ,[Temperature]
-          ,[Order_Number]
-          ,[Time_Alarm]
-         ,CASE
-     WHEN [Record_request].[Confirmation] IS NULL THEN 'wait_confirm'
-     ELSE [Record_request].[Confirmation]
-    END AS Confirmation
-          ,[User_Confirm]
-          ,[Receiver]
-        ,convert(date,[Record_request].[TimeStamp]) as date
-        FROM [LinkedServer1].[LabelPrintRequest].[dbo].[Record_request]
-        JOIN [Temp_TransportData].[dbo].[Line_for_QRcode]
-            ON [Line_for_QRcode].Label_Digit15 = [Record_request].[Motor]
-            AND [Line_for_QRcode].Item_no = [Record_request].Model_ID
-            AND [Record_request].Line = [Line_for_QRcode].Label_Digit23
-      where convert(date,[Record_request].[TimeStamp]) > '2023-07-17'
-    and YEAR([Record_request].[TimeStamp]) !='2565'
-    and [Status]!='Deleted' and [Qty] > 10
-    )
-    --ALL--and  [Model_name]='**ALL**'
-    --ALL--and [Line_for_QRcode].Line ='**ALL**'
-    
- 
-    --date between '${startDate}' and ' ${finishDate}'            
-    --and Model_name ='${model}'                                                          
-    --and Line = '${Line}'                                
-    --and Confirmation='${confirm}'    
-    select * from Data
-    where 
-    date between '${startDate}' and ' ${finishDate}'            
-    and Model_name ='${model}'                                                          
-    and Line = '${Line}'              
-    and Confirmation='${confirm}'          
-    order by convert(date,[TimeStamp])`)
-    } else if (model !== '**ALL**' && Line !=='**ALL**'&& confirm !== 'OK') {
-      var result = await user.sequelize.query(`  
-      with Data as (SELECT
-        [Model_name]
-        ,[Model_ID]
-        ,[Motor]
-        ,[Revision]
-        ,[WW]
-        ,[Ramp]
-        ,[Ramp_ID]
-        ,[CrashStop]
-        ,[CrashStop_ID]
-        ,[Base]
-        ,[Base_ID]
-        ,'L'+[Record_request].[Line] as [CODE_Line]
-       ,[Line_for_QRcode].Line as Line
-        ,[MSH_name]
-        ,[MSH_ID]
-        ,[Qty]
-        ,[Record_request].[TimeStamp]
-        ,[Requester]
-        ,[Tray]
-        ,[Tray_Qty]
-        ,[Status]
-        ,[[Diverter/Airdam]
-        ,[Stack]
-        ,[Temperature]
-        ,[Order_Number]
-        ,[Time_Alarm]
-       ,CASE
-   WHEN [Record_request].[Confirmation] IS NULL THEN 'wait_confirm'
-   ELSE [Record_request].[Confirmation]
-  END AS Confirmation
-        ,[User_Confirm]
-        ,[Receiver]
-      ,convert(date,[Record_request].[TimeStamp]) as date
-      FROM [LinkedServer1].[LabelPrintRequest].[dbo].[Record_request]
-      JOIN [Temp_TransportData].[dbo].[Line_for_QRcode]
-          ON [Line_for_QRcode].Label_Digit15 = [Record_request].[Motor]
-          AND [Line_for_QRcode].Item_no = [Record_request].Model_ID
-          AND [Record_request].Line = [Line_for_QRcode].Label_Digit23
-    where convert(date,[Record_request].[TimeStamp]) > '2023-07-17'
-  and YEAR([Record_request].[TimeStamp]) !='2565'
-  and [Status]!='Deleted' and [Qty] > 10
-  )
-  --ALL--and  [Model_name]='**ALL**'
-  --ALL--and [Line_for_QRcode].Line ='**ALL**'
-  
-
-  --date between '${startDate}' and ' ${finishDate}'            
-  --and Model_name ='${model}'                                                          
-  --and Line = '${Line}'                                
-  --and Confirmation='${confirm}'    
-  select * from Data
-  where 
-           
-  Model_name ='${model}'                                                          
-  and Line = '${Line}'              
-  and Confirmation='${confirm}'          
-  order by convert(date,[TimeStamp])`)
-
-    } else {
+ } else {
         // เงื่อนไขที่ 1 (กรณีที่เหลือที่มี model, Line, confirm เป็น '**ALL**', '**ALL**', 'OK')
         var result = await user.sequelize.query(`  
       with Data as (SELECT
@@ -553,22 +290,13 @@ router.get(
   and YEAR([Record_request].[TimeStamp]) !='2565'
   and [Status]!='Deleted' and [Qty] > 10
   )
-  --ALL--and  [Model_name]='**ALL**'
-  --ALL--and [Line_for_QRcode].Line ='**ALL**'
-  
-
-  --date between '${startDate}' and ' ${finishDate}'            
-  --and Model_name ='${model}'                                                          
-  --and Line = '${Line}'                                
-  --and Confirmation='${confirm}'    
+ 
   select * from Data
-  where 
-           
-  --Model_name ='${model}'                                                          
-  --and Line = '${Line}'
-  date between '${startDate}' and ' ${finishDate}'  
-  and           
-  Confirmation='${confirm}'          
+  where        
+  Model_name ='${model}'  
+  and Line = '${Line}' 
+  and Confirmation='${confirm}'      
+  and date between '${startDate}' and ' ${finishDate}'     
   order by convert(date,[TimeStamp])`)
     }
       var listRawData = [];

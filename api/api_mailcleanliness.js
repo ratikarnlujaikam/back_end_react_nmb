@@ -1,4 +1,4 @@
-const {MailUrl} = require("../server");
+// const {MailUrl} = require("../server");
 
 const express = require("express");
 const router = express.Router();

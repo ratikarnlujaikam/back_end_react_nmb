@@ -5,8 +5,13 @@ const user = require("../database/models/user");
 router.get("/Line", async (req, res) => {
   try {
     let result = await user.sequelize.query(`
-    SELECT DISTINCT REPLACE( [Line]+' : '+[Model], '/', '_') as [year]
-    FROM [Setlot].[dbo].[This_Tactime]
+    SELECT REPLACE([Line_Cleanroom].[Line] + ' : ' + ISNULL([Model], ''), '/', '_') AS year
+    FROM [Component_Master].[dbo].[Line_Cleanroom]
+    LEFT JOIN [Setlot].[dbo].[This_Tactime]
+    ON [Line_Cleanroom].Line = [This_Tactime].Line
+    WHERE [Line_Cleanroom].[Line] != '';
+    
+
     `);
 
     // Extract the result array from the query result
@@ -85,7 +90,7 @@ router.get("/LARPP/:year/:start", async (req, res) => {
          FROM (
             SELECT Line, Actual AS [Actual], Hour, 'Output' AS [Process], Design
             FROM [Oneday_ReadtimeData].[dbo].[Summary_Actual_perHr]
-            --WHERE MfgDate = '${start}' AND Line = '${Line}'
+            WHERE MfgDate = '${start}' AND Line like '${Line}%'
             UNION ALL
             SELECT Line, [Plan], Hour, 'Target' AS [Process], Design
             FROM [Oneday_ReadtimeData].[dbo].[Summary_Actual_perHr]
@@ -99,6 +104,7 @@ router.get("/LARPP/:year/:start", async (req, res) => {
             FROM [Oneday_ReadtimeData].[dbo].[Compare_NG_Process]
             LEFT JOIN [Setlot].[dbo].[This_Tactime] ON [Compare_NG_Process].Line = [This_Tactime].Line
             --WHERE MfgDate = '${start}' AND [Compare_NG_Process].Line + ' : ' + Model = '${Line}'
+            where Process != 'Camera Diverter'
             GROUP BY [Compare_NG_Process].Line, [Hour], Model, Process, Design,[First_NG]
          ) AS set1
          FOR XML PATH('')), 
@@ -111,11 +117,11 @@ router.get("/LARPP/:year/:start", async (req, res) => {
     SET @pivot_query = '
         with set1 as (select Line,Actual as Qty,Hour,''Output'' as [Process],Design
       FROM [Oneday_ReadtimeData].[dbo].[Summary_Actual_perHr]
-      where MfgDate = ''${start}'' and Line = ''${Line}''
+      where MfgDate = ''${start}'' and Line like ''${Line}%''
       union all
       select Line,[Plan],Hour,''Target'' as [Process],Design
       FROM [Oneday_ReadtimeData].[dbo].[Summary_Actual_perHr]
-      where MfgDate = ''${start}'' and Line = ''${Line}''
+      where MfgDate = ''${start}'' and Line like ''${Line}%''
       union all
         select [Compare_NG_Process].Line + '' : '' + Model as [Line],sum([First_NG]) as [First_NG]
       ,case when Hour between 0 and 6 then ''0''+ CAST(Hour AS nvarchar) 
@@ -124,7 +130,8 @@ router.get("/LARPP/:year/:start", async (req, res) => {
       ,Process,Design
        FROM [Oneday_ReadtimeData].[dbo].[Compare_NG_Process]
        left join [Setlot].[dbo].[This_Tactime] on [Compare_NG_Process].Line = [This_Tactime].Line
-       where MfgDate = ''${start}'' and [Compare_NG_Process].Line + '' : '' + Model = ''${Line}'' 
+       where MfgDate = ''${start}'' and [Compare_NG_Process].Line + '' : '' + Model like ''${Line}%''
+       and  Process != ''Camera Diverter''
        group by   [Compare_NG_Process].Line,[Hour],Model,Process,Design
        
        )

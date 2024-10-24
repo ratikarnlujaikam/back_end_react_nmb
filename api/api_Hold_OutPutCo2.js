@@ -21,7 +21,7 @@ router.get(
         where [Deleter] is null 
           )
         ,set3 as (
-        select [MfgDate],[Line],[Item_No],[Model],[QA_No],Shift,Qty
+        select [MfgDate],set2.[Line],[Item_No],[Model],[QA_No],Shift,Qty
         from Set1
         full join set2
         on set2.QA_No=set1.QANumber
@@ -121,7 +121,7 @@ router.get(
         where [Deleter] is null 
           )
         ,set3 as (
-        select [MfgDate],[Line],[Item_No],[Model],[QA_No],Shift,Qty
+        select [MfgDate],set2.[Line],[Item_No],[Model],[QA_No],Shift,Qty
         from Set1
         full join set2
         on set2.QA_No=set1.QANumber

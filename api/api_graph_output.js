@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const user = require("../database/models/user");
-
+const moment = require('moment');
+const { QueryTypes } = require('sequelize');
 router.get("/Line", async (req, res) => {
   try {
     let result = await user.sequelize.query(`
-      SELECT DISTINCT REPLACE([Line], '/', '_') AS [year]
-      FROM [Oneday_ReadtimeData].[dbo].[Summary_Actual_perHr];
+    SELECT DISTINCT REPLACE( [Line]+' : '+[Model], '/', '_') as [year]
+    FROM [Setlot].[dbo].[This_Tactime]
     `);
 
     // Extract the result array from the query result
@@ -35,109 +36,71 @@ router.get("/LARPP/:year/:start", async (req, res) => {
     const { year,start } = req.params;
    
     const Line = year.replace('_', '/');
+    const Line_split = year.split(':').map(part => part.trim()).filter(part => part !== "")[0];
+    var adjustedDate = start;
+    var currentDateTime = moment();
+    var startDate = moment(start);
 
+    // Check if the start date is today
+    if (startDate.isSame(currentDateTime, 'day')) {
+      // Check if the current time is between 0:00 and 7:00 AM
+      if (currentDateTime.hour() >= 0 && currentDateTime.hour() < 6) {
+        adjustedDate = startDate.subtract(1, 'days').format('YYYY-MM-DD');
+        var oee = await user.sequelize.query(`
+          SELECT [Quality]
+          ,[Performance]
+          ,[Availability]
+          ,[OEE]
+          ,'${adjustedDate}' as MfgDate
+      FROM [Oneday_ReadtimeData].[dbo].[OEE_MfgDate]
+      where [Line]like '%${Line_split}%' 
+      and [MfgDate] = '${adjustedDate}'`)
+      console.log("adjustedDate",adjustedDate);
+      } else {
+        var oee = await user.sequelize.query(`
+              exec [Oneday_ReadtimeData].[dbo].[OEE_MfgDate_daily] '${Line_split}'`)
+      }
+    } else {
+      adjustedDate = startDate.format('YYYY-MM-DD');
+      var oee = await user.sequelize.query(` 
+        SELECT [Quality]
+          ,[Performance]
+          ,[Availability]
+          ,[OEE]
+          ,'${adjustedDate}' as MfgDate
+      FROM [Oneday_ReadtimeData].[dbo].[OEE_MfgDate]
+      where [Line]like '%${Line_split}%' 
+      and [MfgDate] = '${adjustedDate}'`)
+    }
 
-    var result = await user.sequelize.query(`SELECT  sum([Actual]) as Actual,
+  
+
+    var result = await user.sequelize.query(`
+    --Plan_Actual_Diff--
+    SELECT  sum([Actual]) as Actual,
 	  sum([Plan]) as Plan_1,
 	  (sum([Actual]))-(sum([Plan])) as diff
 
   FROM
 	  [Oneday_ReadtimeData].[dbo].[Summary_Actual_perHr]
   WHERE
-	  [Line] = '${Line}'
+	  [Line] like '${Line}%'
 	  --AND [MfgDate] = CONVERT(DATE, GETDATE())
     and [MfgDate] = '${start}'`);
 
     var resultGraph = await user.sequelize.query(`
-    SELECT
-		  [MfgDate],
-		  [Line],
-		  [Actual] as Actual,
-		  [Plan] ,
-		  [diff],
-		  [Accum_Actual],
-		  [Accum_Plan],
-		  [Hour],
-		  [Design],
-		  [NG],
-		  [DT]
-	  FROM
-		  [Oneday_ReadtimeData].[dbo].[Summary_Actual_perHr]
-	  WHERE
-		  [Line] = '${Line}'
-		  --AND [MfgDate] = CONVERT(DATE, GETDATE())
-      and [MfgDate] = '${start}'
-	  order by [Hour]`);
+      exec [Setlot].[dbo].[call_Dashboard_webI4] '${start}','${Line_split}'`);
 
     var result_Operating = await user.sequelize.query(`
-    WITH sum_Problem AS  
-    (
-        SELECT
-            SUM([Plan]) AS Sum_Plan,
-            SUM([diff]) AS PF,
-            SUM([NG]) AS NG,
-            SUM([DT]) AS [DT]
-        FROM
-            [Oneday_ReadtimeData].[dbo].[Summary_Actual_perHr]
-        WHERE
-            [Line] = '${Line}' 
-            and [MfgDate] = '${start}'
-            --AND [MfgDate] = CONVERT(DATE, GETDATE())
-    ),
-    set2 AS (
-        SELECT 
-            Total_Sum_Plan + Total_PF + Total_NG + Total_DT AS Grand_Total
-        FROM (
-            SELECT 
-                SUM(Sum_Plan) AS Total_Sum_Plan,
-                SUM(PF) AS Total_PF,
-                SUM(NG) AS Total_NG,
-                SUM([DT]) AS Total_DT
-            FROM sum_Problem
-        ) AS TotalSums
-    )
-    
-    SELECT 
-        CAST(Sum_Plan AS DECIMAL(10, 1)) / Grand_Total * 100 AS Plen_Percentage,
-        CAST(PF AS DECIMAL(10, 1)) / Grand_Total * 100 AS PE_Percentage,
-        CAST(NG AS DECIMAL(10, 1)) / Grand_Total * 100 AS NG_Percentage,
-        CAST([DT] AS DECIMAL(10, 1)) / Grand_Total * 100 AS DT_Percentage
-    FROM sum_Problem, set2;
+
+
+    exec [Oneday_ReadtimeData].[dbo].[OEE_percentage_Line2] '${start}','${Line_split}'
+
+   
 `);
 
 var result_Pie = await user.sequelize.query(`
-WITH sum_Problem AS
-    (
-        SELECT
-         
-            SUM([diff]) AS PF,
-            SUM([NG]) AS NG,
-            SUM([DT]) AS [DT]
-        FROM
-            [Oneday_ReadtimeData].[dbo].[Summary_Actual_perHr]
-        WHERE
-           [Line] = '${Line}' 
-            and [MfgDate] = '${start}'
-            --AND [MfgDate] = CONVERT(DATE, GETDATE())
-    ),
-    set2 AS (
-        SELECT
-             Total_PF + Total_NG + Total_DT AS Grand_Total
-        FROM (
-            SELECT
-               
-                SUM(PF) AS Total_PF,
-                SUM(NG) AS Total_NG,
-                SUM([DT]) AS Total_DT
-            FROM sum_Problem
-        ) AS TotalSums
-    )
-
-    SELECT
-        CAST(PF AS DECIMAL(10, 1)) / Grand_Total * 100 AS PE_Pie,
-        CAST(NG AS DECIMAL(10, 1)) / Grand_Total * 100 AS NG_Pie,
-        CAST([DT] AS DECIMAL(10, 1)) / Grand_Total * 100 AS DT_Pie
-    FROM sum_Problem, set2;
+    exec [Setlot].[dbo].[call_Dashboard_Pie] '${start}','${Line_split}'
 `);
 
     // แกน  y
@@ -150,6 +113,10 @@ WITH sum_Problem AS
     let Yield = [];
     let MC_Downtime = [];
     let Loss_PF = [];
+    let Losstime = [];
+    let CT_Loss = [];
+    let CKT = [];
+
     resultGraph[0].forEach((item) => {
       Actual.push(item.Actual);
       diff.push(item.diff);
@@ -158,39 +125,50 @@ WITH sum_Problem AS
       Plan.push(item.Plan);
       Yield.push(item.NG);
       MC_Downtime.push(item.DT);
-      Loss_PF.push(item.diff);
+      Loss_PF.push(item.Loss_PF);
+      Losstime.push(item.Losstime);
+      CT_Loss.push(item.CT_Loss);
+      CKT.push(item.CKT);
+ 
     });
 
-    let Plen_Percentage = [];
-    let PE_Percentage = [];
+    let Plan_Percentage = [];
     let NG_Percentage = [];
     let DT_Percentage = [];
+    let CKT_Percentage = [];
+    let Losstime_Percentage = [];
+    let CTLoss_Percentage = [];
 
     result_Operating[0].forEach((item) => {
-      Plen_Percentage.push(item.Plen_Percentage);
-      PE_Percentage.push(item.PE_Percentage);
+      Plan_Percentage.push(item.Plan_Percentage);
       NG_Percentage.push(item.NG_Percentage);
       DT_Percentage.push(item.DT_Percentage);
+      CKT_Percentage.push(item.CKT_Percentage);
+      Losstime_Percentage.push(item.Losstime_Percentage);
+      CTLoss_Percentage.push(item.CTLoss_Percentage);
     });
-    console.log(Plen_Percentage);
-    console.log(PE_Percentage);
+    console.log(Plan_Percentage);
     console.log(NG_Percentage);
     console.log(DT_Percentage);
+    console.log(CKT_Percentage);
 
     
-    let PE_Pie = [];
+
     let NG_Pie = [];
     let DT_Pie = [];
+    let CKT_Pie = [];
+    let CTLoss_Pie = [];
+    let Losstime_Pie = [];
 
     result_Pie[0].forEach((item) => {
-     
-      PE_Pie.push(item.PE_Pie);
       NG_Pie.push(item.NG_Pie);
       DT_Pie.push(item.DT_Pie);
+      CKT_Pie.push(item.CKT_Pie);
+      CTLoss_Pie.push(item.CTLoss_Pie);
+      Losstime_Pie.push(item.Losstime_Pie);
     });
-    console.log(PE_Pie);
-    console.log(NG_Pie);
-    console.log(DT_Pie);
+
+
 
     var result_shift = await user.sequelize.query(`
 
@@ -202,7 +180,7 @@ WITH sum_Problem AS
   FROM
     [Oneday_ReadtimeData].[dbo].[Summary_Actual_perHr]
   WHERE
-    [Line] = '${Line}'
+    [Line] like '${Line_split}%'
     AND [Hour] BETWEEN '*07' AND '*14'
     and [MfgDate] = '${start}'
   GROUP BY
@@ -217,7 +195,7 @@ WITH sum_Problem AS
   FROM
     [Oneday_ReadtimeData].[dbo].[Summary_Actual_perHr]
   WHERE
-    [Line] = '${Line}'
+    [Line] like '${Line_split}%'
     AND [Hour] BETWEEN '*15' AND '*22'
     and [MfgDate] = '${start}'
   
@@ -231,7 +209,7 @@ WITH sum_Problem AS
   FROM
     [Oneday_ReadtimeData].[dbo].[Summary_Actual_perHr]
   WHERE
-    [Line] = '${Line}'
+    [Line] like '${Line_split}%'
     AND [Hour] BETWEEN '*23' AND '06'
     and [MfgDate] = '${start}'
   
@@ -245,7 +223,7 @@ WITH sum_Problem AS
   FROM
     [Oneday_ReadtimeData].[dbo].[Summary_Actual_perHr]
   WHERE
-    [Line] = '${Line}'
+    [Line] like '${Line_split}%'
     AND [Hour] BETWEEN '*07' AND '*18'
     and [MfgDate] = '${start}'
     UNION ALL
@@ -257,7 +235,7 @@ WITH sum_Problem AS
   FROM
     [Oneday_ReadtimeData].[dbo].[Summary_Actual_perHr]
   WHERE
-    [Line] = '${Line}'
+    [Line] like '${Line_split}%'
     AND [Hour] BETWEEN '*19' AND '06'
     and [MfgDate] = '${start}'  
 `);
@@ -282,10 +260,12 @@ console.log("diff_shift",diff_shift);
 
     var listRawData = [];
     listRawData.push(result[0]);
+
     console.log(listRawData);
 
     res.json({
       result: result[0],
+      oee: oee[0],
       resultGraph: resultGraph[0],
       result_Operating: result_Operating[0],
       result_Pie: result_Pie[0],
@@ -299,10 +279,15 @@ console.log("diff_shift",diff_shift);
       Yield ,
       MC_Downtime ,
       Loss_PF ,
+      Losstime,
+      CT_Loss ,
+      Loss_PF ,
       shift_all,
       Actual_shift,
       Plan_shift,
       diff_shift,
+      CKT,
+
       api_result: "ok",
     });
   } catch (error) {

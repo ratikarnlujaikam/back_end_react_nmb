@@ -19,134 +19,336 @@ async function main() {
   cron.schedule("*/60 * * * *", () => {
     console.log("running a task every 60 minute");
   });
+  // cron.schedule("* * * * *", () => {
+  //   console.log("All minute");
+  // });
+
+    // ControlSpec Dynamic dimension 25/11/22
+    // cron.schedule("37 17 * * *", async () => {
+    //   let startDate = await moment().add("days", -91).format("yyyy-MM-DD");
+    //   let finishDate = await moment().add("days", -1).format("yyyy-MM-DD");
+    //   let models = [
+        
+    //     "BACALL",
+    //     "CIMAR3",
+    //     "CIMAR5",
+    //     "CIMBP3",
+    //     "CIMBP4",
+    //     "CIMBP5",
+    //     "EVANBP",
+    //     "HARRIE",
+    //     "HEPSIS",
+    //     "KEST12",
+    //     "KEST3D",
+    //     "LIGB1D",
+    //     "LONGSP",
+    //     "M11P5D",
+    //     "PHASIS",
+    //     "ROSE1L",
+    //     "ROSE2D",
+    //     "SKB1ST",
+    //     "SKB2ST",
+    //     "SKYBO3",
+    //     "SKYBO4",
+    //     "V11 1D",
+    //     "V11 2D",
+    //     "V11 4D",
+    //     "V15C1D",
+    //     "V15C2D",
+    //     "V15C4D",
+    //     "V9 3D",
+    //     "V9S3D",
+    //   ];
+    //   let param = [
+    //     "Set_Dim",
+    //     "Set_Dim_A",
+    //     "Set_Dim_B",
+    //     "Set_Dim_C",
+    //     "Ramp_to_Datum",
+    //     "Parallelism",
+    //     "Pivot_Height",
+    //     "FlyHeight",
+    //     "Projection1",
+    //     "Ramp_Pivot",
+    //   ];
+    //   for (let i = 0; i < models.length; i++) {
+    //     if (models[i] === "BACALL") { 
+    //       var lines = ["2-13"]; 
+    //     } else if (models[i] === "CIMAR3") {
+    //       var lines = ["1-11", "2-12","2-11","1-11"];
+    //     } else if (models[i] === "CIMAR5") {
+    //       var lines = ["2-4", "2-5"];
+    //     } else if (models[i] === "CIMBP3") {
+    //       var lines = ["1-11","2-12","3-28"];
+    //     } else if (models[i] === "CIMBP4") {
+    //       var lines = ["1-7","3-24","2-9"];
+    //     } else if (models[i] === "CIMBP5") {
+    //       var lines = ["2-4","2-5"];
+    //     } else if (models[i] === "HARRIE") {
+    //       var lines = ["2-8"];
+    //     } else if (models[i] === "HEPSIS") {
+    //       var lines = ["4-10", "4-12"];
+    //     } else if (models[i] === "KEST12") {
+    //       var lines = ["4-9"];
+    //     } else if (models[i] === "KEST3D") {
+    //       var lines = ["4-9"];
+    //     } else if (models[i] === "LIGB1D") {
+    //       var lines = ["4-11","3-29","1-6"];
+    //     } else if (models[i] === "LONGSP") {
+    //       var lines = [
+    //         "1-4",
+    //         "2-6",
+    //         "3-10",
+    //         "3-14",
+    //         "3-6",
+    //       ];
+    //     } else if (models[i] === "M11P5D") {
+    //       var lines = ["2-14"];
+    //     } else if (models[i] === "PHASIS") {
+    //       var lines = ["4-10", "4-12"];
+    //     } else if (models[i] === "ROSE1L") {
+    //       var lines = ["2-12", "1-9", "2-11"];
+    //     } else if (models[i] === "ROSE2D") {
+    //       var lines = ["1-8", "2-11","1-9"];
+    //     } else if (models[i] === "SKB1ST") {
+    //       var lines = ["3-30"];
+    //     } else if (models[i] === "SKB2ST") {
+    //       var lines = ["3-30"];
+    //     } else if (models[i] === "SKYBO3") {
+    //       var lines = ["4-8", "3-26"];
+    //     } else if (models[i] === "SKYBO4") {
+    //       var lines = [ "3-26"];
+    //     } else if (models[i] === "V11 1D") {
+    //       var lines = ["1-10", "2-9",];
+    //     } else if (models[i] === "V11 2D") {
+    //       var lines = ["1-6", "3-29","2-12","3-22"];
+    //     } else if (models[i] === "V11 4D") {
+    //       var lines = ["3-22"];
+    //     } else if (models[i] === "V15C1D") {
+    //       var lines = ["1-10","2-9"];
+    //     } else if (models[i] === "V15C2D") {
+    //       var lines = ["1-6","3-29",];
+    //     } else if (models[i] === "V15C4D") {
+    //       var lines = ["3-22"];
+    //     } else if (models[i] === "V9 3D") {
+    //       var lines = ["2-13"];
+    //     } else if (models[i] === "V9S3D") {
+    //       var lines = ["2-13"];
+    //     } else {
+    //       var lines = [];
+    //     }
+    //     for (let j = 0; j < lines.length; j++) {
+    //       for (let k = 0; k < param.length; k++) {
+    //         // console.log(models[i] + lines[j] + param[k])
+    //         currentModel = models[i];
+    //         productionline = lines[j];
+    //         parameter = param[k];
+  
+    //         var input = await DataShow.sequelize.query(
+    //           `with Xbar (x1,x2,x3,x4) as
+    //         (select case when [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] < [Component_Master].[dbo].[Master_matchings].[USL] 
+    //         and [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] > [Component_Master].[dbo].[Master_matchings].[LSL]
+    //         then [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] end as [X]
+    //         ,[DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Model]
+    //         ,[DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Line]
+    //         ,[Component_Master].[dbo].[Master_matchings].[Parameter]
+    //         FROM [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester]
+    //         inner join [Component_Master].[dbo].[Master_matchings]
+    //         on [Component_Master].[dbo].[Master_matchings].[Model] = [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Model]
+    //         where [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Date] between '${startDate}' and '${finishDate}'
+    //         and [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Model] = '${currentModel}'
+    //         and [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Line] = '${productionline}'
+    //         and [Component_Master].[dbo].[Master_matchings].[Parameter] = '${parameter}'
+    //         and [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Barcode] not in (select [Barcode_Motor] from [TransportData].[dbo].[Register])
+    //         and [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] >= [LSL]
+    //         AND [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] <= [USL]
+    //         ),
+            
+    //         Sbar (s1,s2) as
+    //         (select cast(stdev([DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[${parameter}]) as decimal(10,5))
+    //         ,[DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Model]
+    //         FROM [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester]
+    //         where [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Date] between '${startDate}' and '${finishDate}'
+    //         and [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Model] = '${currentModel}'
+    //         and [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Line] = '${productionline}'
+    //         and [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Barcode] not in (select [Barcode_Motor] from [TransportData].[dbo].[Register])
+    //         group by [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Model]
+    //         ,[DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Date]
+    //         )
+            
+    //         select
+    //         x2 as [Model]
+    //         ,x4 as [Parameter]
+    //         ,x3 as [Line]
+    //         ,cast(AVG(x1) as decimal(10,3))-(3*cast(stdev(x1) as decimal(10,3))) as [LCL]
+    //         ,cast(AVG(x1) as decimal(10,3))+(3*cast(stdev(x1) as decimal(10,3))) as [UCL]
+    //         ,cast(AVG(x1) as decimal(10,3)) as [CL]
+    //         ,cast(AVG(s1) as decimal(10,3))-(3*cast(stdev(s1) as decimal(10,3))) as [LCL_STD]
+    //         ,cast(AVG(s1) as decimal(10,3))+(3*cast(stdev(s1) as decimal(10,3))) as [UCL_STD]
+    //         ,cast(AVG(s1) as decimal(10,3)) as [CL_STD]
+    //         from Xbar inner join Sbar on Xbar.x2 = Sbar.s2
+    //         group by x2,x3,x4`
+    //         );
+    //         console.log(input);
+    //         console.log(input[0].length);
+  
+    //         //insert into SQL
+    //         for (let i = 0; i < input[0].length; i++) {
+    //           Model = input[0][i].Model;
+    //           Parameter = input[0][i].Parameter;
+    //           Line = input[0][i].Line;
+    //           CL = input[0][i].CL;
+    //           LCL = input[0][i].LCL;
+    //           UCL = input[0][i].UCL;
+    //           CL_STD = input[0][i].CL_STD;
+    //           LCL_STD = input[0][i].LCL_STD;
+    //           UCL_STD = input[0][i].UCL_STD;
+    //           createdAt = moment().format();
+    //           updatedAt = moment().format();
+    //           try {
+    //             let result = await AutoAlarms.sequelize
+    //               .query(`INSERT INTO [TransportData].[dbo].[ControlSpecs]
+    //             VALUES('${currentModel}','${Line}','${Parameter}',${CL},${LCL},${UCL},${CL_STD},${LCL_STD},${UCL_STD},'${createdAt}','${updatedAt}');`);
+    //             console.log(result);
+    //           } catch (error) {
+    //             console.log(error);
+    //             res.json({
+    //               error,
+    //               api_result: "nok",
+    //             });
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // });
     // ControlSpec Static dimension 23/11/22
-    cron.schedule(" * * *", async () => {
-      let startDate = await moment().add("days", -91).format("yyyy-MM-DD");
-      let finishDate = await moment().add("days", -1).format("yyyy-MM-DD");
-      let models = ["EVANBP", "HARRIE","LONGSP","OSPREY", "ROSE1L", "ROSE2D","V15C4D"];
-      let param = [
-        "Set_Dimension_Stack",
-        "Set_Dimension_Attractive",
-        "Parallelism_Stack",
-        "Parallelism_Attractive",
-        "P1_Stack_1",
-        "P2_Stack_2",
-        "P3_Stack_3",
-        "P4_Ramp_Height",
-        "P5_Pivot",
-        "P4_Attractive_1",
-        "P5_Attractive_2",
-        "P6_Attractive_3",
-      ];
-      for (let i = 0; i < models.length; i++) {
-        if (models[i] === "EVANBP") {
-          var lines = [
-            "B14",
-            "B15",
-            "B16",
-            "C14",
-          ];
-        } else if (models[i] === "HARRIE") {
-          var lines = ["B16","B19"];
-        } else if (models[i] === "LONGSP") {
-          var lines = [
-            "B15",
-            "B17",
-            "B18",
-            "B19",
-            "B20",
-            "B21",
-          ];
-        } else if (models[i] === "OSPREY") {
-          var lines = ["B16"];
-        } else if (models[i] === "ROSE1L") {
-          var lines = ["C1", "C2", "C3"];
-        } else if (models[i] === "ROSE2D") {
-          var lines = ["C2", "C3"];
-        } else if (models[i] === "V15C4D") {
-          var lines = ["B14", "B19", "B21"];
-        } else {
-          var lines = [];
-        }
-        for (let j = 0; j < lines.length; j++) {
-          for (let k = 0; k < param.length; k++) {
-            // console.log(models[i] + lines[j] + param[k])
-            model = models[i];
-            productionline = lines[j];
-            parameter = param[k];
+    // cron.schedule("56 16 * * *", async () => {
+    //   let startDate = await moment().add("days", -91).format("yyyy-MM-DD");
+    //   let finishDate = await moment().add("days", -1).format("yyyy-MM-DD");
+    //   let models = ["AVENGE","EVANBP","HARRIE","LONGSP","MARL10"];
+    //   let param = [
+    //     "Set_Dimension_Stack",
+    //     "Set_Dimension_Attractive",
+    //     "Parallelism_Stack",
+    //     "Parallelism_Attractive",
+    //     "P1_Stack_1",
+    //     "P2_Stack_2",
+    //     "P3_Stack_3",
+    //     "P4_Ramp_Height",
+    //     "P5_Pivot",
+    //     "P4_Attractive_1",
+    //     "P5_Attractive_2",
+    //     "P6_Attractive_3",
+    //   ];
+    //   for (let i = 0; i < models.length; i++) {
+    //     if (models[i] === "AVENGE") {
+    //       var lines = [
+    //         "B14",
+    //         "B16",
+    //         "B17",
+    //         "B18",
+    //         "B19",
+    //         "B20",
+    //         "B21",
+    //         "C14",
+    //       ];
+    //     } else if (models[i] === "EVANBP") {
+    //       var lines = ["B15","B18","B19","B20","B21","C14"];
+    //     } else if (models[i] === "HARRIE") {
+    //       var lines = ["B20"];
+    //     } else if (models[i] === "LONGSP") {
+    //       var lines = ["B14","B15","B19","B16","B17","B18","B20","B21"];
+    //     } else if (models[i] === "MARL10") {
+    //       var lines = ["B15","B18","B19","B21"];
+    //     } else if (models[i] === "SUMMIT") {
+    //       var lines = ["B18","B19"];
+      
+    //     } else {
+    //       var lines = [];
+    //     }
+    //     for (let j = 0; j < lines.length; j++) {
+    //       for (let k = 0; k < param.length; k++) {
+    //         // console.log(models[i] + lines[j] + param[k])
+    //         currentModel  = models[i];
+    //         productionline = lines[j];
+    //         parameter = param[k];
   
-            var input = await DataShow.sequelize.query(
-              `with Xbar (x1,x2,x3,x4) as
-            (select [DataforAnalysis].[dbo].[Dimension_WR].[${parameter}] as [X]
-            ,[DataforAnalysis].[dbo].[Dimension_WR].[Model]
-            ,[DataforAnalysis].[dbo].[Dimension_WR].[Line]
-            ,[TransportData].[dbo].[Master_matchings].[Parameter]
-            FROM [DataforAnalysis].[dbo].[Dimension_WR]
-            inner join [TransportData].[dbo].[Master_matchings]
-            on [TransportData].[dbo].[Master_matchings].[Model] = [DataforAnalysis].[dbo].[Dimension_WR].[Model]
-            where [DataforAnalysis].[dbo].[Dimension_WR].[Date] between '${startDate}' and '${finishDate}'
-            and [DataforAnalysis].[dbo].[Dimension_WR].[Model] = '${model}'
-            and [DataforAnalysis].[dbo].[Dimension_WR].[Line] = '${productionline}'
-            and [TransportData].[dbo].[Master_matchings].[Parameter] = '${parameter}'
-            ),
+    //         var input = await DataShow.sequelize.query(
+    //           `with Xbar (x1,x2,x3,x4) as
+    //         (select [DataforAnalysis].[dbo].[Dimension_WR].[${parameter}] as [X]
+    //         ,[DataforAnalysis].[dbo].[Dimension_WR].[Model]
+    //         ,[DataforAnalysis].[dbo].[Dimension_WR].[Line]
+    //         ,[Component_Master].[dbo].[Master_matchings].[Parameter]
+    //         FROM [DataforAnalysis].[dbo].[Dimension_WR]
+    //         inner join [Component_Master].[dbo].[Master_matchings]
+    //         on [Component_Master].[dbo].[Master_matchings].[Model] = [DataforAnalysis].[dbo].[Dimension_WR].[Model]
+    //         where [DataforAnalysis].[dbo].[Dimension_WR].[Date] between '${startDate}' and '${finishDate}'
+    //         and [DataforAnalysis].[dbo].[Dimension_WR].[Model] = '${currentModel }'
+    //         and [DataforAnalysis].[dbo].[Dimension_WR].[Line] = '${productionline}'
+    //         and [Component_Master].[dbo].[Master_matchings].[Parameter] = '${parameter}'
+    //         and [DataforAnalysis].[dbo].[Dimension_WR].[${parameter}] >= [LSL]
+    //         AND [DataforAnalysis].[dbo].[Dimension_WR].[${parameter}] <= [USL]
+
+    //         ),
             
-            Sbar (s1,s2) as
-            (select cast(stdev([DataforAnalysis].[dbo].[Dimension_WR].[${parameter}]) as decimal(10,5))
-            ,[DataforAnalysis].[dbo].[Dimension_WR].[Model]
-            FROM [DataforAnalysis].[dbo].[Dimension_WR]
-            where [DataforAnalysis].[dbo].[Dimension_WR].[Date] between '${startDate}' and '${finishDate}'
-            and [DataforAnalysis].[dbo].[Dimension_WR].[Model] = '${model}'
-            and [DataforAnalysis].[dbo].[Dimension_WR].[Line] = '${productionline}'
-            group by [DataforAnalysis].[dbo].[Dimension_WR].[Model]
-            ,[DataforAnalysis].[dbo].[Dimension_WR].[Date]
-            )
+    //         Sbar (s1,s2) as
+    //         (select cast(stdev([DataforAnalysis].[dbo].[Dimension_WR].[${parameter}]) as decimal(10,5))
+    //         ,[DataforAnalysis].[dbo].[Dimension_WR].[Model]
+    //         FROM [DataforAnalysis].[dbo].[Dimension_WR]
+    //         where [DataforAnalysis].[dbo].[Dimension_WR].[Date] between '${startDate}' and '${finishDate}'
+    //         and [DataforAnalysis].[dbo].[Dimension_WR].[Model] = '${currentModel}'
+    //         and [DataforAnalysis].[dbo].[Dimension_WR].[Line] = '${productionline}'
+    //         group by [DataforAnalysis].[dbo].[Dimension_WR].[Model]
+    //         ,[DataforAnalysis].[dbo].[Dimension_WR].[Date]
+    //         )
             
-            select
-            x2 as [Model]
-            ,x3 as [Line]
-            ,x4 as [Parameter]
-            ,cast(AVG(x1) as decimal(10,3))-(3*cast(stdev(x1) as decimal(10,3))) as [LCL]
-            ,cast(AVG(x1) as decimal(10,3))+(3*cast(stdev(x1) as decimal(10,3))) as [UCL]
-            ,cast(AVG(x1) as decimal(10,3)) as [CL]
-            ,cast(AVG(s1) as decimal(10,3))-(3*cast(stdev(s1) as decimal(10,3))) as [LCL_STD]
-            ,cast(AVG(s1) as decimal(10,3))+(3*cast(stdev(s1) as decimal(10,3))) as [UCL_STD]
-            ,cast(AVG(s1) as decimal(10,3)) as [CL_STD]
-            from Xbar inner join Sbar on Xbar.x2 = Sbar.s2
-            group by x2,x3,x4`
-            );
-            console.log(input);
-            console.log(input[0].length);
+    //         select
+    //         x2 as [Model]
+    //         ,x3 as [Line]
+    //         ,x4 as [Parameter]
+    //         ,cast(AVG(x1) as decimal(10,3))-(3*cast(stdev(x1) as decimal(10,3))) as [LCL]
+    //         ,cast(AVG(x1) as decimal(10,3))+(3*cast(stdev(x1) as decimal(10,3))) as [UCL]
+    //         ,cast(AVG(x1) as decimal(10,3)) as [CL]
+    //         ,cast(AVG(s1) as decimal(10,3))-(3*cast(stdev(s1) as decimal(10,3))) as [LCL_STD]
+    //         ,cast(AVG(s1) as decimal(10,3))+(3*cast(stdev(s1) as decimal(10,3))) as [UCL_STD]
+    //         ,cast(AVG(s1) as decimal(10,3)) as [CL_STD]
+    //         from Xbar inner join Sbar on Xbar.x2 = Sbar.s2
+    //         group by x2,x3,x4`
+    //         );
+    //         console.log(input);
+    //         console.log(input[0].length);
   
-            //insert into SQL
-            for (let i = 0; i < input[0].length; i++) {
-              model = input[0][i].model;
-              Parameter = input[0][i].Parameter;
-              Line = input[0][i].Line;
-              CL = input[0][i].CL;
-              LCL = input[0][i].LCL;
-              UCL = input[0][i].UCL;
-              CL_STD = input[0][i].CL_STD;
-              LCL_STD = input[0][i].LCL_STD;
-              UCL_STD = input[0][i].UCL_STD;
-              createdAt = moment().format();
-              updatedAt = moment().format();
-              try {
-                let result = await AutoAlarms.sequelize
-                  .query(`INSERT INTO [TransportData].[dbo].[ControlSpecs]
-                  VALUES('${model}','${Line}','${Parameter}',${CL},${LCL},${UCL},${CL_STD},${LCL_STD},${UCL_STD},'${createdAt}','${updatedAt}');`);
-                console.log(result);
-              } catch (error) {
-                console.log(error);
-                res.json({
-                  error,
-                  api_result: "nok",
-                });
-              }
-            }
-          }
-        }
-      }
-    });
+    //         //insert into SQL
+    //         for (let i = 0; i < input[0].length; i++) {
+    //           model = input[0][i].model;
+    //           Parameter = input[0][i].Parameter;
+    //           Line = input[0][i].Line;
+    //           CL = input[0][i].CL;
+    //           LCL = input[0][i].LCL;
+    //           UCL = input[0][i].UCL;
+    //           CL_STD = input[0][i].CL_STD;
+    //           LCL_STD = input[0][i].LCL_STD;
+    //           UCL_STD = input[0][i].UCL_STD;
+    //           createdAt = moment().format();
+    //           updatedAt = moment().format();
+    //           try {
+    //             let result = await AutoAlarms.sequelize
+    //               .query(`INSERT INTO [TransportData].[dbo].[ControlSpecs]
+    //               VALUES('${currentModel}','${Line}','${Parameter}',${CL},${LCL},${UCL},${CL_STD},${LCL_STD},${UCL_STD},'${createdAt}','${updatedAt}');`);
+    //             console.log(result);
+    //           } catch (error) {
+    //             console.log(error);
+    //             res.json({
+    //               error,
+    //               api_result: "nok",
+    //             });
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // });
 
 
 
@@ -297,7 +499,7 @@ async function main() {
       ,[TransportData].[dbo].[ControlSpecCMRs].[LSL] as [LSL]
       ,[TransportData].[dbo].[ControlSpecCMRs].[USL] as [USL]
       ,[Dynamic_Parallelism_Tester].[Machine_no] as [Machine]
-      ,[TransportData].[dbo].[Master_matchings].[Parameter] as [Parameter]
+      ,[Component_Master].[dbo].[Master_matchings].[Parameter] as [Parameter]
       ,CASE WHEN substring([Dynamic_Parallelism_Tester].[Barcode], 17,1) = 'D' THEN 'NMB'
       WHEN substring([Dynamic_Parallelism_Tester].[Barcode], 17,1) = 'M' THEN 'MMI'
       WHEN substring([Dynamic_Parallelism_Tester].[Barcode], 17,1) = 'T' THEN 'MMI'
@@ -309,9 +511,9 @@ async function main() {
       inner join [TransportData].[dbo].[ControlSpecCMRs]
       on [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Model] = [TransportData].[dbo].[ControlSpecCMRs].[Model]
       and [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Line] = [TransportData].[dbo].[ControlSpecCMRs].[Line]
-      INNER JOIN [TransportData].[dbo].[Master_matchings]
-      ON [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Model] = [TransportData].[dbo].[Master_matchings].[Model]
-      and [TransportData].[dbo].[Master_matchings].[Parameter] = [TransportData].[dbo].[ControlSpecCMRs].[Parameter]
+      INNER JOIN [Component_Master].[dbo].[Master_matchings]
+      ON [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Model] = [Component_Master].[dbo].[Master_matchings].[Model]
+      and [Component_Master].[dbo].[Master_matchings].[Parameter] = [TransportData].[dbo].[ControlSpecCMRs].[Parameter]
       where [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Time] between '${datetime}' and '${datetime2}'
       and [TransportData].[dbo].[ControlSpecCMRs].[Parameter] = '${parameter}'
       group by CONVERT(DATE,[Dynamic_Parallelism_Tester].[Time]),
@@ -322,7 +524,7 @@ async function main() {
       ,[TransportData].[dbo].[ControlSpecCMRs].[LSL]
       ,[TransportData].[dbo].[ControlSpecCMRs].[USL]
       ,[Dynamic_Parallelism_Tester].[Machine_no]
-      ,[TransportData].[dbo].[Master_matchings].[Parameter]
+      ,[Component_Master].[dbo].[Master_matchings].[Parameter]
       ,CASE WHEN substring([Dynamic_Parallelism_Tester].[Barcode], 17,1) = 'D' THEN 'NMB'
       WHEN substring([Dynamic_Parallelism_Tester].[Barcode], 17,1) = 'M' THEN 'MMI'
       WHEN substring([Dynamic_Parallelism_Tester].[Barcode], 17,1) = 'T' THEN 'MMI'
@@ -343,8 +545,8 @@ async function main() {
       ,a9 as [Parameter]
       ,a10 as [Base_Supplier]
       from Proj
-      inner join [TransportData].[dbo].[Master_matchings]
-      on [TransportData].[dbo].[Master_matchings].[Model] = Proj.a2
+      inner join [Component_Master].[dbo].[Master_matchings]
+      on [Component_Master].[dbo].[Master_matchings].[Model] = Proj.a2
       group by a1,a2,a3,a6,a7,a8,a9,a10
       having (cast(AVG(case when (a5 > [Master_matchings].LSL) and (a5 < [Master_matchings].USL) 
       then a5 end) as decimal(10,4))) < a6 or cast(AVG(a5) as decimal(10,4)) > a7`
@@ -515,20 +717,20 @@ async function main() {
                     ,cast(AVG([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}]) as decimal(10,3)) as [Average]
                     ,[TransportData].[dbo].[ControlSpecs].[LCL] as [LCL]
                     ,[TransportData].[dbo].[ControlSpecs].[UCL] as [UCL]
-                    ,[TransportData].[dbo].[Master_matchings].[USL] as [USL]
-                    ,[TransportData].[dbo].[Master_matchings].[CL] as [CL]
-                    ,[TransportData].[dbo].[Master_matchings].[LSL] as [LSL]
+                    ,[Component_Master].[dbo].[Master_matchings].[USL] as [USL]
+                    ,[Component_Master].[dbo].[Master_matchings].[CL] as [CL]
+                    ,[Component_Master].[dbo].[Master_matchings].[LSL] as [LSL]
                     ,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Machine_no] as [Machine]
-                    ,[TransportData].[dbo].[Master_matchings].[Parameter] as [Parameter]
+                    ,[Component_Master].[dbo].[Master_matchings].[Parameter] as [Parameter]
                     ,[TransportData].[dbo].[ControlSpecs].[LCL_STD] as [LCL_STD]
                     ,[TransportData].[dbo].[ControlSpecs].[UCL_STD] as [UCL_STD]
                     FROM [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester]
-                    INNER JOIN [TransportData].[dbo].[Master_matchings]
-                    ON [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].Model = [TransportData].[dbo].[Master_matchings].Model
+                    INNER JOIN [Component_Master].[dbo].[Master_matchings]
+                    ON [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].Model = [Component_Master].[dbo].[Master_matchings].Model
                     INNER JOIN [TransportData].[dbo].[ControlSpecs]
                     ON [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Model] = [TransportData].[dbo].[ControlSpecs].[Model]
                     and [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Line] = [TransportData].[dbo].[ControlSpecs].[Line]
-                    and [TransportData].[dbo].[Master_matchings].[Parameter] = [TransportData].[dbo].[ControlSpecs].[Parameter]
+                    and [Component_Master].[dbo].[Master_matchings].[Parameter] = [TransportData].[dbo].[ControlSpecs].[Parameter]
                     where [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Time] between '${datetime}' and '${datetime2}'
                     and [TransportData].[dbo].[ControlSpecs].[Parameter] = '${parameter}'
                           
@@ -537,23 +739,23 @@ async function main() {
                     ,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Model]
                     ,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Line]
                     ,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Machine_no]
-                    ,[TransportData].[dbo].[Master_matchings].[Parameter]
+                    ,[Component_Master].[dbo].[Master_matchings].[Parameter]
                     ,[TransportData].[dbo].[ControlSpecs].[LCL]
                     ,[TransportData].[dbo].[ControlSpecs].[UCL] 
-                    ,[TransportData].[dbo].[Master_matchings].[USL]
-                    ,[TransportData].[dbo].[Master_matchings].[CL]
-                    ,[TransportData].[dbo].[Master_matchings].[LSL]
+                    ,[Component_Master].[dbo].[Master_matchings].[USL]
+                    ,[Component_Master].[dbo].[Master_matchings].[CL]
+                    ,[Component_Master].[dbo].[Master_matchings].[LSL]
                     ,[TransportData].[dbo].[ControlSpecs].[LCL_STD]
                     ,[TransportData].[dbo].[ControlSpecs].[UCL_STD]
-                    having (cast(AVG(case when ([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] > [TransportData].[dbo].[Master_matchings].LSL)
-                    and ([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] < [TransportData].[dbo].[Master_matchings].USL) 
+                    having (cast(AVG(case when ([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] > [Component_Master].[dbo].[Master_matchings].LSL)
+                    and ([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] < [Component_Master].[dbo].[Master_matchings].USL) 
                     then [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] end) as decimal(10,3))) < [TransportData].[dbo].[ControlSpecs].[LCL]
                     or cast(AVG([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}]) as decimal(10,3)) > [TransportData].[dbo].[ControlSpecs].[UCL]
                     count([${parameter}]) > 20
                     order by
                     [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Model]
                     ,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Line]
-                    ,[TransportData].[dbo].[Master_matchings].[Parameter]
+                    ,[Component_Master].[dbo].[Master_matchings].[Parameter]
                     ,cast(DATEPART(hour,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Time]) as varchar) + 0 desc`
       );
 
@@ -746,20 +948,20 @@ async function main() {
                     ,cast(AVG([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}]) as decimal(10,3)) as [Average]
                     ,[TransportData].[dbo].[ControlSpecs].[LCL] as [LCL]
                     ,[TransportData].[dbo].[ControlSpecs].[UCL] as [UCL]
-                    ,[TransportData].[dbo].[Master_matchings].[USL] as [USL]
-                    ,[TransportData].[dbo].[Master_matchings].[CL] as [CL]
-                    ,[TransportData].[dbo].[Master_matchings].[LSL] as [LSL]
+                    ,[Component_Master].[dbo].[Master_matchings].[USL] as [USL]
+                    ,[Component_Master].[dbo].[Master_matchings].[CL] as [CL]
+                    ,[Component_Master].[dbo].[Master_matchings].[LSL] as [LSL]
                     ,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Machine_no] as [Machine]
-                    ,[TransportData].[dbo].[Master_matchings].[Parameter] as [Parameter]
+                    ,[Component_Master].[dbo].[Master_matchings].[Parameter] as [Parameter]
                     ,[TransportData].[dbo].[ControlSpecs].[LCL_STD] as [LCL_STD]
                     ,[TransportData].[dbo].[ControlSpecs].[UCL_STD] as [UCL_STD]
                     FROM [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester]
-                    INNER JOIN [TransportData].[dbo].[Master_matchings]
-                    ON [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].Model = [TransportData].[dbo].[Master_matchings].Model
+                    INNER JOIN [Component_Master].[dbo].[Master_matchings]
+                    ON [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].Model = [Component_Master].[dbo].[Master_matchings].Model
                     INNER JOIN [TransportData].[dbo].[ControlSpecs]
                     ON [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Model] = [TransportData].[dbo].[ControlSpecs].[Model]
                     and [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Line] = [TransportData].[dbo].[ControlSpecs].[Line]
-                    and [TransportData].[dbo].[Master_matchings].[Parameter] = [TransportData].[dbo].[ControlSpecs].[Parameter]
+                    and [Component_Master].[dbo].[Master_matchings].[Parameter] = [TransportData].[dbo].[ControlSpecs].[Parameter]
                     where [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Time] between '${datetime}' and '${datetime2}'
                     and [TransportData].[dbo].[ControlSpecs].[Parameter] = '${parameter}'
                           
@@ -768,23 +970,23 @@ async function main() {
                     ,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Model]
                     ,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Line]
                     ,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Machine_no]
-                    ,[TransportData].[dbo].[Master_matchings].[Parameter]
+                    ,[Component_Master].[dbo].[Master_matchings].[Parameter]
                     ,[TransportData].[dbo].[ControlSpecs].[LCL]
                     ,[TransportData].[dbo].[ControlSpecs].[UCL] 
-                    ,[TransportData].[dbo].[Master_matchings].[USL]
-                    ,[TransportData].[dbo].[Master_matchings].[CL]
-                    ,[TransportData].[dbo].[Master_matchings].[LSL]
+                    ,[Component_Master].[dbo].[Master_matchings].[USL]
+                    ,[Component_Master].[dbo].[Master_matchings].[CL]
+                    ,[Component_Master].[dbo].[Master_matchings].[LSL]
                     ,[TransportData].[dbo].[ControlSpecs].[LCL_STD]
                     ,[TransportData].[dbo].[ControlSpecs].[UCL_STD]
-                    having (cast(AVG(case when ([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] > [TransportData].[dbo].[Master_matchings].LSL)
-                    and ([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] < [TransportData].[dbo].[Master_matchings].USL) 
+                    having (cast(AVG(case when ([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] > [Component_Master].[dbo].[Master_matchings].LSL)
+                    and ([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] < [Component_Master].[dbo].[Master_matchings].USL) 
                     then [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] end) as decimal(10,3))) < [TransportData].[dbo].[ControlSpecs].[LCL]
                     or cast(AVG([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}]) as decimal(10,3)) > [TransportData].[dbo].[ControlSpecs].[UCL]
                     count([${parameter}]) > 20
                     order by
                     [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Model]
                     ,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Line]
-                    ,[TransportData].[dbo].[Master_matchings].[Parameter]
+                    ,[Component_Master].[dbo].[Master_matchings].[Parameter]
                     ,cast(DATEPART(hour,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Time]) as varchar) + 0 desc`
       );
 
@@ -974,20 +1176,20 @@ async function main() {
         ,cast(AVG([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}]) as decimal(10,3)) as [Average]
         ,[TransportData].[dbo].[ControlSpecs].[LCL] as [LCL]
         ,[TransportData].[dbo].[ControlSpecs].[UCL] as [UCL]
-        ,[TransportData].[dbo].[Master_matchings].[USL] as [USL]
-        ,[TransportData].[dbo].[Master_matchings].[CL] as [CL]
-        ,[TransportData].[dbo].[Master_matchings].[LSL] as [LSL]
+        ,[Component_Master].[dbo].[Master_matchings].[USL] as [USL]
+        ,[Component_Master].[dbo].[Master_matchings].[CL] as [CL]
+        ,[Component_Master].[dbo].[Master_matchings].[LSL] as [LSL]
         ,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Machine_no] as [Machine]
-        ,[TransportData].[dbo].[Master_matchings].[Parameter] as [Parameter]
+        ,[Component_Master].[dbo].[Master_matchings].[Parameter] as [Parameter]
         ,[TransportData].[dbo].[ControlSpecs].[LCL_STD] as [LCL_STD]
         ,[TransportData].[dbo].[ControlSpecs].[UCL_STD] as [UCL_STD]
         FROM [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester]
-        INNER JOIN [TransportData].[dbo].[Master_matchings]
-        ON [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].Model = [TransportData].[dbo].[Master_matchings].Model
+        INNER JOIN [Component_Master].[dbo].[Master_matchings]
+        ON [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].Model = [Component_Master].[dbo].[Master_matchings].Model
         INNER JOIN [TransportData].[dbo].[ControlSpecs]
         ON [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Model] = [TransportData].[dbo].[ControlSpecs].[Model]
         and [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Line] = [TransportData].[dbo].[ControlSpecs].[Line]
-        and [TransportData].[dbo].[Master_matchings].[Parameter] = [TransportData].[dbo].[ControlSpecs].[Parameter]
+        and [Component_Master].[dbo].[Master_matchings].[Parameter] = [TransportData].[dbo].[ControlSpecs].[Parameter]
         where [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Time] between '${datetime}' and '${datetime2}'
         and [TransportData].[dbo].[ControlSpecs].[Parameter] = '${parameter}'
               
@@ -996,23 +1198,23 @@ async function main() {
         ,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Model]
         ,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Line]
         ,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Machine_no]
-        ,[TransportData].[dbo].[Master_matchings].[Parameter]
+        ,[Component_Master].[dbo].[Master_matchings].[Parameter]
         ,[TransportData].[dbo].[ControlSpecs].[LCL]
         ,[TransportData].[dbo].[ControlSpecs].[UCL] 
-        ,[TransportData].[dbo].[Master_matchings].[USL]
-        ,[TransportData].[dbo].[Master_matchings].[CL]
-        ,[TransportData].[dbo].[Master_matchings].[LSL]
+        ,[Component_Master].[dbo].[Master_matchings].[USL]
+        ,[Component_Master].[dbo].[Master_matchings].[CL]
+        ,[Component_Master].[dbo].[Master_matchings].[LSL]
         ,[TransportData].[dbo].[ControlSpecs].[LCL_STD]
         ,[TransportData].[dbo].[ControlSpecs].[UCL_STD]
-        having (cast(AVG(case when ([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] > [TransportData].[dbo].[Master_matchings].LSL)
-        and ([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] < [TransportData].[dbo].[Master_matchings].USL) 
+        having (cast(AVG(case when ([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] > [Component_Master].[dbo].[Master_matchings].LSL)
+        and ([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] < [Component_Master].[dbo].[Master_matchings].USL) 
         then [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] end) as decimal(10,3))) < [TransportData].[dbo].[ControlSpecs].[LCL]
         or cast(AVG([Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[${parameter}]) as decimal(10,3)) > [TransportData].[dbo].[ControlSpecs].[UCL]
         count([${parameter}]) > 20
         order by
         [Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Model]
         ,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Line]
-        ,[TransportData].[dbo].[Master_matchings].[Parameter]
+        ,[Component_Master].[dbo].[Master_matchings].[Parameter]
         ,cast(DATEPART(hour,[Temp_TransportData].[dbo].[Dynamic_Parallelism_Tester].[Time]) as varchar) + 0 desc`
       );
 
@@ -1217,20 +1419,20 @@ async function main() {
                 ,cast(AVG([Temp_TransportData].[dbo].[Dimension_WR].[${parameter}]) as decimal(10,3)) as [Average]
                 ,[TransportData].[dbo].[ControlSpecs].[LCL] as [LCL]
                 ,[TransportData].[dbo].[ControlSpecs].[UCL] as [UCL]
-                ,[TransportData].[dbo].[Master_matchings].[USL] as [USL]
-                ,[TransportData].[dbo].[Master_matchings].[CL] as [CL]
-                ,[TransportData].[dbo].[Master_matchings].[LSL] as [LSL]
+                ,[Component_Master].[dbo].[Master_matchings].[USL] as [USL]
+                ,[Component_Master].[dbo].[Master_matchings].[CL] as [CL]
+                ,[Component_Master].[dbo].[Master_matchings].[LSL] as [LSL]
                 ,[Temp_TransportData].[dbo].[Dimension_WR].[Machine_no] as [Machine]
-                ,[TransportData].[dbo].[Master_matchings].[Parameter] as [Parameter]
+                ,[Component_Master].[dbo].[Master_matchings].[Parameter] as [Parameter]
                 ,[TransportData].[dbo].[ControlSpecs].[LCL_STD] as [LCL_STD]
                 ,[TransportData].[dbo].[ControlSpecs].[UCL_STD] as [UCL_STD]
                 FROM [Temp_TransportData].[dbo].[Dimension_WR]
-                INNER JOIN [TransportData].[dbo].[Master_matchings]
-                ON [Temp_TransportData].[dbo].[Dimension_WR].Model = [TransportData].[dbo].[Master_matchings].Model
+                INNER JOIN [Component_Master].[dbo].[Master_matchings]
+                ON [Temp_TransportData].[dbo].[Dimension_WR].Model = [Component_Master].[dbo].[Master_matchings].Model
                 INNER JOIN [TransportData].[dbo].[ControlSpecs]
                 ON [Temp_TransportData].[dbo].[Dimension_WR].[Model] = [TransportData].[dbo].[ControlSpecs].[Model]
                 and [Temp_TransportData].[dbo].[Dimension_WR].[Line] = [TransportData].[dbo].[ControlSpecs].[Line]
-                and [TransportData].[dbo].[Master_matchings].[Parameter] = [TransportData].[dbo].[ControlSpecs].[Parameter]
+                and [Component_Master].[dbo].[Master_matchings].[Parameter] = [TransportData].[dbo].[ControlSpecs].[Parameter]
                 where [Temp_TransportData].[dbo].[Dimension_WR].[Time] between '${datetime}' and '${datetime2}'
                 and [TransportData].[dbo].[ControlSpecs].[Parameter] = '${parameter}'
                       
@@ -1239,23 +1441,23 @@ async function main() {
                 ,[Temp_TransportData].[dbo].[Dimension_WR].[Model]
                 ,[Temp_TransportData].[dbo].[Dimension_WR].[Line]
                 ,[Temp_TransportData].[dbo].[Dimension_WR].[Machine_no]
-                ,[TransportData].[dbo].[Master_matchings].[Parameter]
+                ,[Component_Master].[dbo].[Master_matchings].[Parameter]
                 ,[TransportData].[dbo].[ControlSpecs].[LCL]
                 ,[TransportData].[dbo].[ControlSpecs].[UCL] 
-                ,[TransportData].[dbo].[Master_matchings].[USL]
-                ,[TransportData].[dbo].[Master_matchings].[CL]
-                ,[TransportData].[dbo].[Master_matchings].[LSL]
+                ,[Component_Master].[dbo].[Master_matchings].[USL]
+                ,[Component_Master].[dbo].[Master_matchings].[CL]
+                ,[Component_Master].[dbo].[Master_matchings].[LSL]
                 ,[TransportData].[dbo].[ControlSpecs].[LCL_STD]
                 ,[TransportData].[dbo].[ControlSpecs].[UCL_STD]
-                having (cast(AVG(case when ([Temp_TransportData].[dbo].[Dimension_WR].[${parameter}] > [TransportData].[dbo].[Master_matchings].LSL)
-                and ([Temp_TransportData].[dbo].[Dimension_WR].[${parameter}] < [TransportData].[dbo].[Master_matchings].USL) 
+                having (cast(AVG(case when ([Temp_TransportData].[dbo].[Dimension_WR].[${parameter}] > [Component_Master].[dbo].[Master_matchings].LSL)
+                and ([Temp_TransportData].[dbo].[Dimension_WR].[${parameter}] < [Component_Master].[dbo].[Master_matchings].USL) 
                 then [Temp_TransportData].[dbo].[Dimension_WR].[${parameter}] end) as decimal(10,3))) < [TransportData].[dbo].[ControlSpecs].[LCL]
                 or cast(AVG([Temp_TransportData].[dbo].[Dimension_WR].[${parameter}]) as decimal(10,3)) > [TransportData].[dbo].[ControlSpecs].[UCL]
                 count([${parameter}]) > 20
                 order by
                 [Temp_TransportData].[dbo].[Dimension_WR].[Model]
                 ,[Temp_TransportData].[dbo].[Dimension_WR].[Line]
-                ,[TransportData].[dbo].[Master_matchings].[Parameter]
+                ,[Component_Master].[dbo].[Master_matchings].[Parameter]
                 ,cast(DATEPART(hour,[Temp_TransportData].[dbo].[Dimension_WR].[Time]) as varchar) + 0 desc`
         );
 
@@ -1301,20 +1503,20 @@ async function main() {
                 ,cast(AVG([Temp_TransportData].[dbo].[Dimension_WR].[${parameter}]) as decimal(10,3)) as [Average]
                 ,'-' as [LCL]
                 ,[TransportData].[dbo].[ControlSpecs].[UCL] as [UCL]
-                ,[TransportData].[dbo].[Master_matchings].[USL] as [USL]
+                ,[Component_Master].[dbo].[Master_matchings].[USL] as [USL]
                 ,'-' as [CL]
                 ,'-' as [LSL]
                 ,[Temp_TransportData].[dbo].[Dimension_WR].[Machine_no] as [Machine]
-                ,[TransportData].[dbo].[Master_matchings].[Parameter] as [Parameter]
+                ,[Component_Master].[dbo].[Master_matchings].[Parameter] as [Parameter]
                 ,'-' as [LCL_STD]
                 ,[TransportData].[dbo].[ControlSpecs].[UCL_STD] as [UCL_STD]
                 FROM [Temp_TransportData].[dbo].[Dimension_WR]
-                INNER JOIN [TransportData].[dbo].[Master_matchings]
-                ON [Temp_TransportData].[dbo].[Dimension_WR].Model = [TransportData].[dbo].[Master_matchings].Model
+                INNER JOIN [Component_Master].[dbo].[Master_matchings]
+                ON [Temp_TransportData].[dbo].[Dimension_WR].Model = [Component_Master].[dbo].[Master_matchings].Model
                 INNER JOIN [TransportData].[dbo].[ControlSpecs]
                 ON [Temp_TransportData].[dbo].[Dimension_WR].[Model] = [TransportData].[dbo].[ControlSpecs].[Model]
                 and [Temp_TransportData].[dbo].[Dimension_WR].[Line] = [TransportData].[dbo].[ControlSpecs].[Line]
-                and [TransportData].[dbo].[Master_matchings].[Parameter] = [TransportData].[dbo].[ControlSpecs].[Parameter]
+                and [Component_Master].[dbo].[Master_matchings].[Parameter] = [TransportData].[dbo].[ControlSpecs].[Parameter]
                 where [Temp_TransportData].[dbo].[Dimension_WR].[Time] between '${datetime}' and '${datetime2}'
                 and [TransportData].[dbo].[ControlSpecs].[Parameter] = '${parameter}'
                       
@@ -1323,20 +1525,20 @@ async function main() {
                 ,[Temp_TransportData].[dbo].[Dimension_WR].[Model]
                 ,[Temp_TransportData].[dbo].[Dimension_WR].[Line]
                 ,[Temp_TransportData].[dbo].[Dimension_WR].[Machine_no]
-                ,[TransportData].[dbo].[Master_matchings].[Parameter]
+                ,[Component_Master].[dbo].[Master_matchings].[Parameter]
                 ,[TransportData].[dbo].[ControlSpecs].[LCL]
                 ,[TransportData].[dbo].[ControlSpecs].[UCL] 
-                ,[TransportData].[dbo].[Master_matchings].[USL]
-                ,[TransportData].[dbo].[Master_matchings].[CL]
-                ,[TransportData].[dbo].[Master_matchings].[LSL]
+                ,[Component_Master].[dbo].[Master_matchings].[USL]
+                ,[Component_Master].[dbo].[Master_matchings].[CL]
+                ,[Component_Master].[dbo].[Master_matchings].[LSL]
                 ,[TransportData].[dbo].[ControlSpecs].[LCL_STD]
                 ,[TransportData].[dbo].[ControlSpecs].[UCL_STD]
-                having (cast(AVG(case when ([Temp_TransportData].[dbo].[Dimension_WR].[${parameter}] < [TransportData].[dbo].[Master_matchings].USL)
+                having (cast(AVG(case when ([Temp_TransportData].[dbo].[Dimension_WR].[${parameter}] < [Component_Master].[dbo].[Master_matchings].USL)
                 then [Temp_TransportData].[dbo].[Dimension_WR].[${parameter}] end) as decimal(10,3))) > [TransportData].[dbo].[ControlSpecs].[UCL]
                 order by
                 [Temp_TransportData].[dbo].[Dimension_WR].[Model]
                 ,[Temp_TransportData].[dbo].[Dimension_WR].[Line]
-                ,[TransportData].[dbo].[Master_matchings].[Parameter]
+                ,[Component_Master].[dbo].[Master_matchings].[Parameter]
                 ,cast(DATEPART(hour,[Temp_TransportData].[dbo].[Dimension_WR].[Time]) as varchar) + 0 desc`
         );
 
@@ -1529,25 +1731,25 @@ async function main() {
                     ,[Temp_TransportData].[dbo].[Hipot].[Model] as [Model]
                     ,[Temp_TransportData].[dbo].[Hipot].[Line] as [Line]
                     ,cast(DATEPART(hour,[Temp_TransportData].[dbo].[Hipot].[Time]) as varchar) + ':00' as [Time]
-                    ,cast(AVG(case when [Temp_TransportData].[dbo].[Hipot].[${parameter}] < [TransportData].[dbo].[Master_matchings].[USL]
-                    and [Temp_TransportData].[dbo].[Hipot].[${parameter}] > [TransportData].[dbo].[Master_matchings].[LSL]
+                    ,cast(AVG(case when [Temp_TransportData].[dbo].[Hipot].[${parameter}] < [Component_Master].[dbo].[Master_matchings].[USL]
+                    and [Temp_TransportData].[dbo].[Hipot].[${parameter}] > [Component_Master].[dbo].[Master_matchings].[LSL]
                     then [Temp_TransportData].[dbo].[Hipot].[${parameter}] end) as decimal(10,3)) as [Average]
                     ,[TransportData].[dbo].[ControlSpecs].[LCL] as [LCL]
                     ,[TransportData].[dbo].[ControlSpecs].[UCL] as [UCL]
-                    ,[TransportData].[dbo].[Master_matchings].[USL] as [USL]
-                    ,[TransportData].[dbo].[Master_matchings].[CL] as [CL]
-                    ,[TransportData].[dbo].[Master_matchings].[LSL] as [LSL]
+                    ,[Component_Master].[dbo].[Master_matchings].[USL] as [USL]
+                    ,[Component_Master].[dbo].[Master_matchings].[CL] as [CL]
+                    ,[Component_Master].[dbo].[Master_matchings].[LSL] as [LSL]
                     ,[Temp_TransportData].[dbo].[Hipot].[Machine_no] as [Machine]
-                    ,[TransportData].[dbo].[Master_matchings].[Parameter] as [Parameter]
+                    ,[Component_Master].[dbo].[Master_matchings].[Parameter] as [Parameter]
                     ,[TransportData].[dbo].[ControlSpecs].[LCL_STD] as [LCL_STD]
                     ,[TransportData].[dbo].[ControlSpecs].[UCL_STD] as [UCL_STD]
                     FROM [Temp_TransportData].[dbo].[Hipot]
-                    INNER JOIN [TransportData].[dbo].[Master_matchings]
-                    ON [Temp_TransportData].[dbo].[Hipot].Model = [TransportData].[dbo].[Master_matchings].Model
+                    INNER JOIN [Component_Master].[dbo].[Master_matchings]
+                    ON [Temp_TransportData].[dbo].[Hipot].Model = [Component_Master].[dbo].[Master_matchings].Model
                     INNER JOIN [TransportData].[dbo].[ControlSpecs]
                     ON [Temp_TransportData].[dbo].[Hipot].[Model] = [TransportData].[dbo].[ControlSpecs].[Model]
                     and [Temp_TransportData].[dbo].[Hipot].[Line] = [TransportData].[dbo].[ControlSpecs].[Line]
-                    and [TransportData].[dbo].[Master_matchings].[Parameter] = [TransportData].[dbo].[ControlSpecs].[Parameter]
+                    and [Component_Master].[dbo].[Master_matchings].[Parameter] = [TransportData].[dbo].[ControlSpecs].[Parameter]
                     where [Temp_TransportData].[dbo].[Hipot].[Time] between '${datetime}' and '${datetime2}'
                     and [TransportData].[dbo].[ControlSpecs].[Parameter] = '${parameter}'
                           
@@ -1556,25 +1758,25 @@ async function main() {
                     ,[Temp_TransportData].[dbo].[Hipot].[Model]
                     ,[Temp_TransportData].[dbo].[Hipot].[Line]
                     ,[Temp_TransportData].[dbo].[Hipot].[Machine_no]
-                    ,[TransportData].[dbo].[Master_matchings].[Parameter]
+                    ,[Component_Master].[dbo].[Master_matchings].[Parameter]
                     ,[TransportData].[dbo].[ControlSpecs].[LCL]
                     ,[TransportData].[dbo].[ControlSpecs].[UCL] 
-                    ,[TransportData].[dbo].[Master_matchings].[USL]
-                    ,[TransportData].[dbo].[Master_matchings].[CL]
-                    ,[TransportData].[dbo].[Master_matchings].[LSL]
+                    ,[Component_Master].[dbo].[Master_matchings].[USL]
+                    ,[Component_Master].[dbo].[Master_matchings].[CL]
+                    ,[Component_Master].[dbo].[Master_matchings].[LSL]
                     ,[TransportData].[dbo].[ControlSpecs].[LCL_STD]
                     ,[TransportData].[dbo].[ControlSpecs].[UCL_STD]
-                    having (cast(AVG(case when ([Temp_TransportData].[dbo].[Hipot].[${parameter}] > [TransportData].[dbo].[Master_matchings].LSL)
-                    and ([Temp_TransportData].[dbo].[Hipot].[${parameter}] < [TransportData].[dbo].[Master_matchings].USL) 
+                    having (cast(AVG(case when ([Temp_TransportData].[dbo].[Hipot].[${parameter}] > [Component_Master].[dbo].[Master_matchings].LSL)
+                    and ([Temp_TransportData].[dbo].[Hipot].[${parameter}] < [Component_Master].[dbo].[Master_matchings].USL) 
                     then [Temp_TransportData].[dbo].[Hipot].[${parameter}] end) as decimal(10,3))) < [TransportData].[dbo].[ControlSpecs].[LCL]
-                    or (cast(AVG(case when ([Temp_TransportData].[dbo].[Hipot].[${parameter}] > [TransportData].[dbo].[Master_matchings].LSL)
-                    and ([Temp_TransportData].[dbo].[Hipot].[${parameter}] < [TransportData].[dbo].[Master_matchings].USL) 
+                    or (cast(AVG(case when ([Temp_TransportData].[dbo].[Hipot].[${parameter}] > [Component_Master].[dbo].[Master_matchings].LSL)
+                    and ([Temp_TransportData].[dbo].[Hipot].[${parameter}] < [Component_Master].[dbo].[Master_matchings].USL) 
                     then [Temp_TransportData].[dbo].[Hipot].[${parameter}] end) as decimal(10,3))) > [TransportData].[dbo].[ControlSpecs].[UCL]
                     count([${parameter}]) > 20
                     order by
                     [Temp_TransportData].[dbo].[Hipot].[Model]
                     ,[Temp_TransportData].[dbo].[Hipot].[Line]
-                    ,[TransportData].[dbo].[Master_matchings].[Parameter]
+                    ,[Component_Master].[dbo].[Master_matchings].[Parameter]
                     ,cast(DATEPART(hour,[Temp_TransportData].[dbo].[Hipot].[Time]) as varchar) + 0 desc`
       );
 
@@ -1829,203 +2031,7 @@ async function main() {
     }
   });
 
-  // ControlSpec Dynamic dimension 25/11/22
-  cron.schedule("04 14 * * *", async () => {
-    let startDate = await moment().add("days", -91).format("yyyy-MM-DD");
-    let finishDate = await moment().add("days", -1).format("yyyy-MM-DD");
-    let models = [
-      
-      "BACALL",
-      "CIMAR3",
-      "CIMAR5",
-      "CIMBP3",
-      "CIMBP4",
-      "CIMBP5",
-      "EVANBP",
-      "HARRIE",
-      "HEPSIS",
-      "KEST12",
-      "KEST3D",
-      "LIGB1D",
-      "LONGSP",
-      "M11P5D",
-      "PHASIS",
-      "ROSE1L",
-      "ROSE2D",
-      "SKB1ST",
-      "SKB2ST",
-      "SKYBO3",
-      "SKYBO4",
-      "V11 1D",
-      "V11 2D",
-      "V11 4D",
-      "V15C1D",
-      "V15C2D",
-      "V15C4D",
-      "V9 3D",
-      "V9S3D",
-    ];
-    let param = [
-      "Set_Dim",
-      "Set_Dim_A",
-      "Set_Dim_B",
-      "Set_Dim_C",
-      "Ramp_to_Datum",
-      "Parallelism",
-      "Pivot_Height",
-      "FlyHeight",
-      "Projection1",
-      "Ramp_Pivot",
-    ];
-    for (let i = 0; i < models.length; i++) {
-      if (models[i] === "BACALL") { 
-        var lines = ["2-13"]; 
-      } else if (models[i] === "CIMAR3") {
-        var lines = ["1-11", "2-12","2-11","1-11"];
-      } else if (models[i] === "CIMAR5") {
-        var lines = ["2-4", "2-5"];
-      } else if (models[i] === "CIMBP3") {
-        var lines = ["1-11","2-12","3-28"];
-      } else if (models[i] === "CIMBP4") {
-        var lines = ["1-7","3-24","2-9"];
-      } else if (models[i] === "CIMBP5") {
-        var lines = ["2-4","2-5"];
-      } else if (models[i] === "HARRIE") {
-        var lines = ["2-8"];
-      } else if (models[i] === "HEPSIS") {
-        var lines = ["4-10", "4-12"];
-      } else if (models[i] === "KEST12") {
-        var lines = ["4-9"];
-      } else if (models[i] === "KEST3D") {
-        var lines = ["4-9"];
-      } else if (models[i] === "LIGB1D") {
-        var lines = ["4-11","3-29","1-6"];
-      } else if (models[i] === "LONGSP") {
-        var lines = [
-          "1-4",
-          "2-6",
-          "3-10",
-          "3-14",
-          "3-6",
-        ];
-      } else if (models[i] === "M11P5D") {
-        var lines = ["2-14"];
-      } else if (models[i] === "PHASIS") {
-        var lines = ["4-10", "4-12"];
-      } else if (models[i] === "ROSE1L") {
-        var lines = ["2-12", "1-9", "2-11"];
-      } else if (models[i] === "ROSE2D") {
-        var lines = ["1-8", "2-11","1-9"];
-      } else if (models[i] === "SKB1ST") {
-        var lines = ["3-30"];
-      } else if (models[i] === "SKB2ST") {
-        var lines = ["3-30"];
-      } else if (models[i] === "SKYBO3") {
-        var lines = ["4-8", "3-26"];
-      } else if (models[i] === "SKYBO4") {
-        var lines = [ "3-26"];
-      } else if (models[i] === "V11 1D") {
-        var lines = ["1-10", "2-9",];
-      } else if (models[i] === "V11 2D") {
-        var lines = ["1-6", "3-29","2-12","3-22"];
-      } else if (models[i] === "V11 4D") {
-        var lines = ["3-22"];
-      } else if (models[i] === "V15C1D") {
-        var lines = ["1-10","2-9"];
-      } else if (models[i] === "V15C2D") {
-        var lines = ["1-6","3-29",];
-      } else if (models[i] === "V15C4D") {
-        var lines = ["3-22"];
-      } else if (models[i] === "V9 3D") {
-        var lines = ["2-13"];
-      } else if (models[i] === "V9S3D") {
-        var lines = ["2-13"];
-      } else {
-        var lines = [];
-      }
-      for (let j = 0; j < lines.length; j++) {
-        for (let k = 0; k < param.length; k++) {
-          // console.log(models[i] + lines[j] + param[k])
-          model = models[i];
-          productionline = lines[j];
-          parameter = param[k];
 
-          var input = await DataShow.sequelize.query(
-            `with Xbar (x1,x2,x3,x4) as
-          (select case when [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] < [TransportData].[dbo].[Master_matchings].[USL] 
-          and [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] > [TransportData].[dbo].[Master_matchings].[LSL]
-          then [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[${parameter}] end as [X]
-          ,[DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Model]
-          ,[DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Line]
-          ,[TransportData].[dbo].[Master_matchings].[Parameter]
-          FROM [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester]
-          inner join [TransportData].[dbo].[Master_matchings]
-          on [TransportData].[dbo].[Master_matchings].[Model] = [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Model]
-          where [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Date] between '${startDate}' and '${finishDate}'
-          and [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Model] = '${model}'
-          and [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Line] = '${productionline}'
-          and [TransportData].[dbo].[Master_matchings].[Parameter] = '${parameter}'
-          and [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Barcode] not in (select [Barcode_Motor] from [TransportData].[dbo].[Register])
-          ),
-          
-          Sbar (s1,s2) as
-          (select cast(stdev([DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[${parameter}]) as decimal(10,5))
-          ,[DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Model]
-          FROM [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester]
-          where [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Date] between '${startDate}' and '${finishDate}'
-          and [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Model] = '${model}'
-          and [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Line] = '${productionline}'
-          and [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Barcode] not in (select [Barcode_Motor] from [TransportData].[dbo].[Register])
-          group by [DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Model]
-          ,[DataforAnalysis].[dbo].[Dynamic_Parallelism_Tester].[Date]
-          )
-          
-          select
-          x2 as [Model]
-          ,x4 as [Parameter]
-          ,x3 as [Line]
-          ,cast(AVG(x1) as decimal(10,3))-(3*cast(stdev(x1) as decimal(10,3))) as [LCL]
-          ,cast(AVG(x1) as decimal(10,3))+(3*cast(stdev(x1) as decimal(10,3))) as [UCL]
-          ,cast(AVG(x1) as decimal(10,3)) as [CL]
-          ,cast(AVG(s1) as decimal(10,3))-(3*cast(stdev(s1) as decimal(10,3))) as [LCL_STD]
-          ,cast(AVG(s1) as decimal(10,3))+(3*cast(stdev(s1) as decimal(10,3))) as [UCL_STD]
-          ,cast(AVG(s1) as decimal(10,3)) as [CL_STD]
-          from Xbar inner join Sbar on Xbar.x2 = Sbar.s2
-          group by x2,x3,x4`
-          );
-          console.log(input);
-          console.log(input[0].length);
-
-          //insert into SQL
-          for (let i = 0; i < input[0].length; i++) {
-            Model = input[0][i].Model;
-            Parameter = input[0][i].Parameter;
-            Line = input[0][i].Line;
-            CL = input[0][i].CL;
-            LCL = input[0][i].LCL;
-            UCL = input[0][i].UCL;
-            CL_STD = input[0][i].CL_STD;
-            LCL_STD = input[0][i].LCL_STD;
-            UCL_STD = input[0][i].UCL_STD;
-            createdAt = moment().format();
-            updatedAt = moment().format();
-            try {
-              let result = await AutoAlarms.sequelize
-                .query(`INSERT INTO [TransportData].[dbo].[ControlSpecs]
-              VALUES('${Model}','${Line}','${Parameter}',${CL},${LCL},${UCL},${CL_STD},${LCL_STD},${UCL_STD},'${createdAt}','${updatedAt}');`);
-              console.log(result);
-            } catch (error) {
-              console.log(error);
-              res.json({
-                error,
-                api_result: "nok",
-              });
-            }
-          }
-        }
-      }
-    }
-  });
 
 
 
@@ -2034,15 +2040,15 @@ async function main() {
   let startDate = await moment().add("days", -91).format("yyyy-MM-DD");
   let finishDate = await moment().add("days", -1).format("yyyy-MM-DD");
   let models = [
-    // "BACALL",
-    // "CIMAR3",
-    // "CIMAR5",
-    // "CIMBP3",
-    // "CIMBP4",
-    // "CIMBP5",
-    // "EAGRBP",
-    // "EVANBP",
-    // "HARRIE",
+    "BACALL",
+    "CIMAR3",
+    "CIMAR5",
+    "CIMBP3",
+    "CIMBP4",
+    "CIMBP5",
+    "EAGRBP",
+    "EVANBP",
+    "HARRIE",
     "HEPSIS",
     "LIGB1D",
     "LONGSP",
@@ -2158,19 +2164,19 @@ async function main() {
 
         var input = await DataShow.sequelize.query(
           `with Xbar (x1,x2,x3,x4) as
-          (select case when [DataforAnalysis].[dbo].[EWMS].[${parameter}] < [TransportData].[dbo].[Master_matchings].[USL] 
-          and [DataforAnalysis].[dbo].[EWMS].[${parameter}] > [TransportData].[dbo].[Master_matchings].[LSL]
+          (select case when [DataforAnalysis].[dbo].[EWMS].[${parameter}] < [Component_Master].[dbo].[Master_matchings].[USL] 
+          and [DataforAnalysis].[dbo].[EWMS].[${parameter}] > [Component_Master].[dbo].[Master_matchings].[LSL]
           then [DataforAnalysis].[dbo].[EWMS].[${parameter}] end as [X]
           ,[DataforAnalysis].[dbo].[EWMS].[Model]
           ,[DataforAnalysis].[dbo].[EWMS].[Line]
-          ,[TransportData].[dbo].[Master_matchings].[Parameter]
+          ,[Component_Master].[dbo].[Master_matchings].[Parameter]
           FROM [DataforAnalysis].[dbo].[EWMS]
-          inner join [TransportData].[dbo].[Master_matchings]
-          on [TransportData].[dbo].[Master_matchings].[Model] = [DataforAnalysis].[dbo].[EWMS].[Model]
+          inner join [Component_Master].[dbo].[Master_matchings]
+          on [Component_Master].[dbo].[Master_matchings].[Model] = [DataforAnalysis].[dbo].[EWMS].[Model]
           where [DataforAnalysis].[dbo].[EWMS].[Date] between '${startDate}' and '${finishDate}'
           and [DataforAnalysis].[dbo].[EWMS].[Model] = '${model}'
           and [DataforAnalysis].[dbo].[EWMS].[Line] = '${productionline}'
-          and [TransportData].[dbo].[Master_matchings].[Parameter] = '${parameter}'
+          and [Component_Master].[dbo].[Master_matchings].[Parameter] = '${parameter}'
           and [DataforAnalysis].[dbo].[EWMS].[Barcode] not in (select [Barcode_Motor] from [TransportData].[dbo].[Register])
           ),
           
@@ -2358,34 +2364,34 @@ async function main() {
 
           var input = await DataShow.sequelize.query(
             `with Xbar (x1,x2,x3,x4) as
-            (select case when [DataforAnalysis].[dbo].[Hipot].[${parameter}] < [TransportData].[dbo].[Master_matchings].[USL]
-            and [DataforAnalysis].[dbo].[Hipot].[${parameter}] > [TransportData].[dbo].[Master_matchings].[LSL]
+            (select case when [DataforAnalysis].[dbo].[Hipot].[${parameter}] < [Component_Master].[dbo].[Master_matchings].[USL]
+            and [DataforAnalysis].[dbo].[Hipot].[${parameter}] > [Component_Master].[dbo].[Master_matchings].[LSL]
             then [DataforAnalysis].[dbo].[Hipot].[${parameter}] end as [X]
             ,[DataforAnalysis].[dbo].[Hipot].[Model]
             ,[DataforAnalysis].[dbo].[Hipot].[Line]
-            ,[TransportData].[dbo].[Master_matchings].[Parameter]
+            ,[Component_Master].[dbo].[Master_matchings].[Parameter]
             FROM [DataforAnalysis].[dbo].[Hipot]
-            inner join [TransportData].[dbo].[Master_matchings]
-            on [TransportData].[dbo].[Master_matchings].[Model] = [DataforAnalysis].[dbo].[Hipot].[Model]
+            inner join [Component_Master].[dbo].[Master_matchings]
+            on [Component_Master].[dbo].[Master_matchings].[Model] = [DataforAnalysis].[dbo].[Hipot].[Model]
             where [DataforAnalysis].[dbo].[Hipot].[Date] between '${startDate}' and '${finishDate}'
             and [DataforAnalysis].[dbo].[Hipot].[Model] = '${model}'
             and [DataforAnalysis].[dbo].[Hipot].[Line] = '${productionline}'
-            and [TransportData].[dbo].[Master_matchings].[Parameter] = '${parameter}'
+            and [Component_Master].[dbo].[Master_matchings].[Parameter] = '${parameter}'
             and [DataforAnalysis].[dbo].[Hipot].[Barcode] not in (select [Barcode_Motor] from [TransportData].[dbo].[Register])
             ),
   
             Sbar (s1,s2) as
-            (select cast(stdev(case when [DataforAnalysis].[dbo].[Hipot].[${parameter}] < [TransportData].[dbo].[Master_matchings].[USL]
-            and [DataforAnalysis].[dbo].[Hipot].[${parameter}] > [TransportData].[dbo].[Master_matchings].[LSL]
+            (select cast(stdev(case when [DataforAnalysis].[dbo].[Hipot].[${parameter}] < [Component_Master].[dbo].[Master_matchings].[USL]
+            and [DataforAnalysis].[dbo].[Hipot].[${parameter}] > [Component_Master].[dbo].[Master_matchings].[LSL]
             then [DataforAnalysis].[dbo].[Hipot].[${parameter}] end) as decimal(10,5))
             ,[DataforAnalysis].[dbo].[Hipot].[Model]
             FROM [DataforAnalysis].[dbo].[Hipot]
-            inner join [TransportData].[dbo].[Master_matchings]
-            on [TransportData].[dbo].[Master_matchings].[Model] = [DataforAnalysis].[dbo].[Hipot].[Model]
+            inner join [Component_Master].[dbo].[Master_matchings]
+            on [Component_Master].[dbo].[Master_matchings].[Model] = [DataforAnalysis].[dbo].[Hipot].[Model]
             where [DataforAnalysis].[dbo].[Hipot].[Date] between '${startDate}' and '${finishDate}'
             and [DataforAnalysis].[dbo].[Hipot].[Model] = '${model}'
             and [DataforAnalysis].[dbo].[Hipot].[Line] = '${productionline}'
-            and [TransportData].[dbo].[Master_matchings].[Parameter] = '${parameter}'
+            and [Component_Master].[dbo].[Master_matchings].[Parameter] = '${parameter}'
             and [DataforAnalysis].[dbo].[Hipot].[Barcode] not in (select [Barcode_Motor] from [TransportData].[dbo].[Register])
             group by [DataforAnalysis].[dbo].[Hipot].[Model]
             ,[DataforAnalysis].[dbo].[Hipot].[Date]
@@ -2444,7 +2450,7 @@ async function main() {
     let startDate = await moment().add("days", -91).format("yyyy-MM-DD");
     let finishDate = await moment().add("days", -1).format("yyyy-MM-DD");
     let models = [
-      // "CIMAR5", "CIMBP5",
+      "CIMAR5", "CIMBP5",
       "EVANBP",
       "LONGSP",
     ];
@@ -2495,33 +2501,33 @@ async function main() {
 
           var input = await DataShow.sequelize.query(
             `with Xbar (x1,x2,x3,x4) as
-          (select case when [Temp_TransportData].[dbo].[Data_matching].[${parameter}] < [TransportData].[dbo].[Master_matchings].[USL]
-          and [Temp_TransportData].[dbo].[Data_matching].[${parameter}] > [TransportData].[dbo].[Master_matchings].[LSL]
+          (select case when [Temp_TransportData].[dbo].[Data_matching].[${parameter}] < [Component_Master].[dbo].[Master_matchings].[USL]
+          and [Temp_TransportData].[dbo].[Data_matching].[${parameter}] > [Component_Master].[dbo].[Master_matchings].[LSL]
           then [Temp_TransportData].[dbo].[Data_matching].[${parameter}] end as [X]
           ,[Temp_TransportData].[dbo].[Data_matching].[Model]
           ,[Temp_TransportData].[dbo].[Data_matching].[Line]
-          ,[TransportData].[dbo].[Master_matchings].[Parameter]
+          ,[Component_Master].[dbo].[Master_matchings].[Parameter]
           FROM [Temp_TransportData].[dbo].[Data_matching]
-          inner join [TransportData].[dbo].[Master_matchings]
-          on [TransportData].[dbo].[Master_matchings].[Model] = [Temp_TransportData].[dbo].[Data_matching].[Model]
+          inner join [Component_Master].[dbo].[Master_matchings]
+          on [Component_Master].[dbo].[Master_matchings].[Model] = [Temp_TransportData].[dbo].[Data_matching].[Model]
           where cast([Temp_TransportData].[dbo].[Data_matching].[Timestamp] as Date) between '${startDate}' and '${finishDate}'
           and [Temp_TransportData].[dbo].[Data_matching].[Model] = '${model}'
           and [Temp_TransportData].[dbo].[Data_matching].[Line] = '${productionline}'
-          and [TransportData].[dbo].[Master_matchings].[Parameter] = '${parameter}'
+          and [Component_Master].[dbo].[Master_matchings].[Parameter] = '${parameter}'
           ),
 
           Sbar (s1,s2) as
-          (select cast(stdev(case when [Temp_TransportData].[dbo].[Data_matching].[${parameter}] < [TransportData].[dbo].[Master_matchings].[USL]
-          and [Temp_TransportData].[dbo].[Data_matching].[${parameter}] > [TransportData].[dbo].[Master_matchings].[LSL]
+          (select cast(stdev(case when [Temp_TransportData].[dbo].[Data_matching].[${parameter}] < [Component_Master].[dbo].[Master_matchings].[USL]
+          and [Temp_TransportData].[dbo].[Data_matching].[${parameter}] > [Component_Master].[dbo].[Master_matchings].[LSL]
           then [Temp_TransportData].[dbo].[Data_matching].[${parameter}] end) as decimal(10,5))
           ,[Temp_TransportData].[dbo].[Data_matching].[Model]
           FROM [Temp_TransportData].[dbo].[Data_matching]
-          inner join [TransportData].[dbo].[Master_matchings]
-          on [TransportData].[dbo].[Master_matchings].[Model] = [Temp_TransportData].[dbo].[Data_matching].[Model]
+          inner join [Component_Master].[dbo].[Master_matchings]
+          on [Component_Master].[dbo].[Master_matchings].[Model] = [Temp_TransportData].[dbo].[Data_matching].[Model]
           where cast([Temp_TransportData].[dbo].[Data_matching].[Timestamp] as Date) between '${startDate}' and '${finishDate}'
           and [Temp_TransportData].[dbo].[Data_matching].[Model] = '${model}'
           and [Temp_TransportData].[dbo].[Data_matching].[Line] = '${productionline}'
-          and [TransportData].[dbo].[Master_matchings].[Parameter] = '${parameter}'          
+          and [Component_Master].[dbo].[Master_matchings].[Parameter] = '${parameter}'          
           group by [Temp_TransportData].[dbo].[Data_matching].[Model]
           ,cast([Temp_TransportData].[dbo].[Data_matching].[Timestamp] as Date)
           )

@@ -6,8 +6,7 @@ const user = require("../database/models/user");
 router.get("/ModelGroup", async (req, res) => {
   
   try {
-    let result = await user.sequelize.query(`SELECT distinct [Model] as ModelGroup FROM [Control_part].[dbo].[Issue_parth_store]
-    union select '**ALL**'`);
+    let result = await user.sequelize.query(`SELECT distinct REPLACE([Model], '/', '_')  as ModelGroup FROM [Control_part].[dbo].[Issue_parth_store] union select '**ALL**'`);
     res.json({
       result: result[0],
       api_result: "ok",
@@ -25,8 +24,9 @@ router.get("/ItemNo/:ModelGroup", async (req, res) => {
   
   try {
     const { ModelGroup } = req.params;
+    const ModelGroup_chang = ModelGroup.replace("_", "/");
     var result = [[]];
-    if (ModelGroup == "**ALL**") {
+    if (ModelGroup_chang == "**ALL**") {
       var result = await user.sequelize.query(`SELECT distinct [Item_no] as [ItemNo]
       FROM [Control_part].[dbo].[Issue_parth_store]
       union select '**ALL**'
@@ -34,7 +34,7 @@ router.get("/ItemNo/:ModelGroup", async (req, res) => {
     } else {
       var result = await user.sequelize.query(`SELECT distinct  [Item_no] as [ItemNo]
       FROM [Control_part].[dbo].[Issue_parth_store]
-         where [Model]='${ModelGroup}'
+         where [Model]='${ModelGroup_chang}'
          union select '**ALL**'
          order by [ItemNo] `);
     }
@@ -57,9 +57,12 @@ async (req, res) => {
   try {
     var result = [[]];
     const { ItemNo,ModelGroup,startDate,finishDate} = req.params;
+    const ModelGroup_chang = ModelGroup.replace("_", "/");
   if (ModelGroup == "**ALL**"  && ItemNo == "**ALL**" ) {
     var result = await user.sequelize
-      .query(` DECLARE @SupplierList NVARCHAR(MAX);
+      .query(` 
+      -- (ModelGroup == "**ALL**"  && ItemNo == "**ALL**" )
+      DECLARE @SupplierList NVARCHAR(MAX);
       DECLARE @query NVARCHAR(MAX);
       DECLARE @Supplier_SUM NVARCHAR(MAX);
       
@@ -85,7 +88,7 @@ async (req, res) => {
       WITH set1 AS (
           SELECT *
           FROM (
-              SELECT [ID], [Model], [Part_name], [Item_no], [Supplier], [MO_number], [IQC_lot], [QTY], [Emp], [MfgDate], [DateTime_store], [Over_issue_L], [Mold]
+              SELECT [ID], [Model], Month,[Part_name], [Item_no], [Supplier], [MO_number], [IQC_lot], [QTY], [Emp], [MfgDate], [DateTime_store], [Over_issue_L], [Mold]
               FROM [Control_part].[dbo].[Issue_parth_store]
             where MfgDate between ''${startDate}'' and '' ${finishDate}'' 
           ) AS SourceTable
@@ -98,6 +101,7 @@ async (req, res) => {
       SELECT 
 			[MfgDate], 
             [DateTime_store], 
+            Month,
             [Model] as Model_Name, 
             [Part_name] as Part_Name, 
             [Item_no] as Item_No,  
@@ -114,6 +118,7 @@ async (req, res) => {
         SELECT 
 		     NULL AS [MfgDate], 
             NULL AS [DateTime_store],
+            NULL AS Month,
             ''TOTAL'' AS [Model], 
             NULL AS [Part_name], 
             NULL AS [Item_no], 
@@ -129,7 +134,7 @@ async (req, res) => {
       ';
       EXEC sp_executesql @query;`
   );
-} else if (ModelGroup == "**ALL**" && ItemNo != "**ALL**" ) {
+} else if (ModelGroup_chang == "**ALL**" && ItemNo != "**ALL**" ) {
   var result = await user.sequelize
     .query(`   DECLARE @SupplierList NVARCHAR(MAX);
     DECLARE @query NVARCHAR(MAX);
@@ -157,7 +162,7 @@ async (req, res) => {
     WITH set1 AS (
         SELECT *
         FROM (
-            SELECT [ID], [Model], [Part_name], [Item_no], [Supplier], [MO_number], [IQC_lot], [QTY], [Emp], [MfgDate], [DateTime_store], [Over_issue_L], [Mold]
+            SELECT [ID], [Model], Month,[Part_name], [Item_no], [Supplier], [MO_number], [IQC_lot], [QTY], [Emp], [MfgDate], [DateTime_store], [Over_issue_L], [Mold]
             FROM [Control_part].[dbo].[Issue_parth_store]
             where MfgDate between ''${startDate}'' and '' ${finishDate}''  and [Item_no]=''${ItemNo}'' 
         ) AS SourceTable
@@ -170,6 +175,7 @@ async (req, res) => {
     SELECT 
     [MfgDate], 
           [DateTime_store], 
+          Month,
           [Model] as Model_Name, 
           [Part_name] as Part_Name, 
           [Item_no] as Item_No,  
@@ -186,6 +192,7 @@ async (req, res) => {
       SELECT 
        NULL AS [MfgDate], 
           NULL AS [DateTime_store],
+          NULL AS Month,
           ''TOTAL'' AS [Model], 
           NULL AS [Part_name], 
           NULL AS [Item_no], 
@@ -200,7 +207,7 @@ async (req, res) => {
     
     ';
     EXEC sp_executesql @query; `);
-} else if(ModelGroup != "**ALL**" &&  ItemNo == "**ALL**" ) {
+} else if(ModelGroup_chang != "**ALL**" &&  ItemNo == "**ALL**" ) {
   var result = await user.sequelize
     .query(`   DECLARE @SupplierList NVARCHAR(MAX);
     DECLARE @query NVARCHAR(MAX);
@@ -228,9 +235,9 @@ async (req, res) => {
     WITH set1 AS (
         SELECT *
         FROM (
-            SELECT [ID], [Model], [Part_name], [Item_no], [Supplier], [MO_number], [IQC_lot], [QTY], [Emp], [MfgDate], [DateTime_store], [Over_issue_L], [Mold]
+            SELECT [ID], [Model], Month,[Part_name], [Item_no], [Supplier], [MO_number], [IQC_lot], [QTY], [Emp], [MfgDate], [DateTime_store], [Over_issue_L], [Mold]
             FROM [Control_part].[dbo].[Issue_parth_store]
-            where MfgDate between ''${startDate}'' and ''${finishDate}'' and [Model]=''${ModelGroup}'' 
+            where MfgDate between ''${startDate}'' and ''${finishDate}'' and [Model]=''${ModelGroup_chang}'' 
         ) AS SourceTable
         PIVOT (
             SUM([QTY]) FOR [Supplier] IN (' + @SupplierList + ')
@@ -241,6 +248,7 @@ async (req, res) => {
     SELECT 
 			[MfgDate], 
             [DateTime_store], 
+            Month,
             [Model] as Model_Name, 
             [Part_name] as Part_Name, 
             [Item_no] as Item_No,  
@@ -257,6 +265,7 @@ async (req, res) => {
         SELECT 
 		     NULL AS [MfgDate], 
             NULL AS [DateTime_store],
+            NULL AS Month,
             ''TOTAL'' AS [Model], 
             NULL AS [Part_name], 
             NULL AS [Item_no], 
@@ -268,9 +277,9 @@ async (req, res) => {
         
           ' + @Supplier_SUM + '
         FROM set1
-    
-    ';
-    EXEC sp_executesql @query;`);
+      
+      ';
+      EXEC sp_executesql @query;`);
     } else {
       var result = await user.sequelize
         .query(` 
@@ -300,9 +309,9 @@ async (req, res) => {
         WITH set1 AS (
             SELECT *
             FROM (
-                SELECT [ID], [Model], [Part_name], [Item_no], [Supplier], [MO_number], [IQC_lot], [QTY], [Emp], [MfgDate], [DateTime_store], [Over_issue_L], [Mold]
+                SELECT [ID], [Model],Month, [Part_name], [Item_no], [Supplier], [MO_number], [IQC_lot], [QTY], [Emp], [MfgDate], [DateTime_store], [Over_issue_L], [Mold]
                 FROM [Control_part].[dbo].[Issue_parth_store]
-                where MfgDate between ''${startDate}'' and '' ${finishDate}''  and [Model]=''${ModelGroup}'' and [Item_no]=''${ItemNo}'' 
+                where MfgDate between ''${startDate}'' and '' ${finishDate}''  and [Model]=''${ModelGroup_chang}'' and [Item_no]=''${ItemNo}'' 
             ) AS SourceTable
             PIVOT (
                 SUM([QTY]) FOR [Supplier] IN (' + @SupplierList + ')
@@ -311,38 +320,40 @@ async (req, res) => {
         
         
         SELECT 
-        [MfgDate], 
-              [DateTime_store], 
-              [Model] as Model_Name, 
-              [Part_name] as Part_Name, 
-              [Item_no] as Item_No,  
-              [MO_number] as MO_Number,  
-              [IQC_lot],
-              [Emp], 
-             
-              [Mold],
-          
-            ' + @SupplierList + '
-          FROM set1
-          
-          union ALL
-          SELECT 
-           NULL AS [MfgDate], 
-              NULL AS [DateTime_store],
-              ''TOTAL'' AS [Model], 
-              NULL AS [Part_name], 
-              NULL AS [Item_no], 
-              NULL AS [MO_number], 
-              NULL AS [IQC_lot],
-              NULL AS [Emp], 
-          
-              NULL AS [Mold],
-          
-            ' + @Supplier_SUM + '
-          FROM set1
+			[MfgDate], 
+            [DateTime_store], 
+            Month,
+            [Model] as Model_Name, 
+            [Part_name] as Part_Name, 
+            [Item_no] as Item_No,  
+            [MO_number] as MO_Number,  
+            [IQC_lot],
+            [Emp], 
+           
+            [Mold],
         
-        ';
-        EXEC sp_executesql @query;
+          ' + @SupplierList + '
+        FROM set1
+        
+        union ALL
+        SELECT 
+		     NULL AS [MfgDate], 
+            NULL AS [DateTime_store],
+            NULL AS Month,
+            ''TOTAL'' AS [Model], 
+            NULL AS [Part_name], 
+            NULL AS [Item_no], 
+            NULL AS [MO_number], 
+            NULL AS [IQC_lot],
+            NULL AS [Emp], 
+        
+            NULL AS [Mold],
+        
+          ' + @Supplier_SUM + '
+        FROM set1
+      
+      ';
+      EXEC sp_executesql @query;
         
    `);
     }

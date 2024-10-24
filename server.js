@@ -4,6 +4,7 @@ const app = express();
 const multer = require('multer');
 const path = require('path');
 const cors = require("cors");
+const { log } = require("console");
 
 app.use(cors());
 
@@ -40,7 +41,7 @@ app.use("/api/motor_EWMS", require("./api/api_motor_EWMS"));
 app.use("/api/motor_hipot", require("./api/api_motor_hipot"));
 app.use("/api/motor_He", require("./api/api_motor_He"));
 app.use("/api/stack_height", require("./api/api_stack_height"));
-app.use("/api/grline", require("./api/api_grline"));
+
 app.use("/api/diecast", require("./api/api_diecast"));
 app.use("/api/VMI", require("./api/api_VMI"));
 app.use("/api/ML", require("./api/api_ML"));
@@ -92,10 +93,35 @@ app.use("/api/mailcleanliness",require("./api/api_mailcleanliness"));
 app.use("/api/cleanlinesssample",require("./api/api_cleanlinesssample"));
 app.use("/api/Compare_Output",require("./api/api_graph_Compare"));
 app.use("/api/Packing_output",require("./api/api_graph_Packing_output"));
+app.use("/api/LAR_BY_MODEL_UPDATE",require("./api/api_LAR_BY_MODEL_G"));
+app.use("/api/percen_OEE",require("./api/api_percen_OEE"));
+app.use("/api/percen_error",require("./api/api_percen_error"));
+app.use("/api/MC_Error_percen",require("./api/api_MC_Error_percen"));
+app.use("/api/graph_Compare_month",require("./api/api_graph_Compare_month"));
+app.use("/api/graph_Compare_day",require("./api/api_graph_Compare_day"));
+app.use("/api/percen_Downtime",require("./api/api_percen_Downtime"));
 
+app.use("/api/graph_downtime",require("./api/api_graph_downtime"));
+app.use("/api/spc_master",require("./api/api_spc_master"));
+app.use("/api/code_AS400",require("./api/api_code_AS400"));
+app.use("/api/alarmtraining",require("./api/api_alarmtraining"));
+app.use("/api/reportojt",require("./api/api_reportojt"));
+app.use("/api/graph_LAR_byteam",require("./api/api_graph_LAR_byteam"));
+app.use("/api/trend_master",require("./api/api_trendmaster_values"));
+app.use("/api/side_menu",require("./api/api_side_menu"));
 
+// app.use("/api/missing_part", require("./api/api_Missing_part"));
+// app.use("/api/downtime", require("./api/api_Mainplan"));
+
+// app.use("/api/importment_downtime", require("./api/api_importment_downtime"));
+
+// app.use("/api/downtime", require("./api/api_Mainplan"));
+
+app.use("/api/Projection",require("./api/api_graph_Projection"));
+app.use("/api/Unpacking",require("./api/api_Unpacking"));
 //NAS
 const Url = "192.168.101.13";
+const MailUrl = "192.168.101.120"
 
 
 const storage = multer.diskStorage({

@@ -14,18 +14,18 @@
     "json2xls": "^0.1.2",
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.10.2",
     "node-cron": "^3.0.0",
     "nodemailer": "^6.6.1",
     "nodemon": "^2.0.21",
     "react-csv": "^2.0.3",
-    "sequelize": "^6.6.2",
+    "sequelize": "^6.37.3",
     "sweetalert2": "^11.10.1",
     "tedious": "^11.0.3"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "nodemon server.js"
   },
   "keywords": [],
   "author": "",

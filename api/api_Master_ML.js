@@ -10,12 +10,36 @@ const moment = require("moment");
 
 router.get("/model", async (req, res) => {
   try {
-    let result = await user.sequelize.query(`select distinct [Model_group]
-    FROM [QAInspection].[dbo].[tbVisualInspection]
-  where [Model_group] is not null
-  and [Model_group]!='' and [Model_group]!='All'
-    order by [Model_group]`);
+    let result = await user.sequelize.query(`
+
+SELECT DISTINCT 
+    --[tbMasterItemNo].ModelShortName AS Fullname, 
+    [tbMasterItemNo].ModelGroup AS Model_group
+FROM 
+    [Component_Master].[dbo].[tbMasterItemNo]
+WHERE 
+    EndOfLife IS NULL
+    AND ModelGroup NOT LIKE '3%' 
+    AND ModelGroup NOT IN ('All Model', 'ALL')
+    `);
     res.json({      
+      result: result[0],
+      api_result: "ok",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      error,
+      api_result: "nok",
+    });
+  }
+});
+
+router.get("/Process", async (req, res) => {
+  try {
+    let result = await user.sequelize.query(`SELECT distinct [Part] FROM [Component_Master].[dbo].[Master_matchings]`);
+
+    res.json({
       result: result[0],
       api_result: "ok",
     });
@@ -30,17 +54,33 @@ router.get("/model", async (req, res) => {
 
 router.get("/Parameter", async (req, res) => {
   try {
-    const { model } = req.params;
-    // var result = [[]];
-    if (model == "**ALL**") {
-      var result = await user.sequelize.query(` SELECT distinct [Part]
-      FROM [Component_Master].[dbo].[Master_matchings]`);
-    } else {
-      var result = await user.sequelize.query(`SELECT distinct [Part]
-      FROM [Component_Master].[dbo].[Master_matchings]`);
-    }
+    const { model, Process } = req.query;
+    console.log(model);
+    console.log(Process);
+    
+    let result = await user.sequelize.query(`
+    WITH tb_para AS (
+      SELECT DISTINCT [Parameter], [Master_matchings].Part 
+      FROM [Component_Master].[dbo].[Master_matchings]
+      WHERE [Master_matchings].Part = '${Process}'
+    ),
+    where_Model AS (
+      SELECT [Master_matchings].Parameter
+      FROM [Component_Master].[dbo].[Master_matchings]
+      WHERE [Master_matchings].Model = '${model}'
+    )
+
+    SELECT tb_para.[Parameter] AS No_Parameter
+    FROM tb_para 
+    LEFT JOIN where_Model ON tb_para.Parameter = where_Model.[Parameter] 
+    WHERE where_Model.Parameter IS NULL`,
+    {
+      replacements: { model: model, Process: Process },
+      type: user.sequelize.QueryTypes.SELECT,
+    });
+
     res.json({
-      result: result[0],
+      result: result,
       api_result: "ok",
     });
   } catch (error) {
@@ -51,6 +91,42 @@ router.get("/Parameter", async (req, res) => {
     });
   }
 });
+
+router.post("/INSERT_Master/:Fullname/:model/:No_Parameter/:LSL/:CL/:USL/:Part/:Machine/:empNumber", async (req, res) => {
+  try {
+    const { Fullname, model, No_Parameter, LSL, CL, USL, Part, Machine, empNumber } = req.params;
+
+    // Construct query with GETDATE() for createdAt and updatedAt
+    const query = `
+      INSERT INTO [Component_Master].[dbo].[Master_matchings] 
+      (Fullname, model, Parameter, LSL, CL, USL, Part, Machine, empNumber, [createdAt], [updatedAt]) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), GETDATE())
+    `;
+    const replacements = [Fullname, model, No_Parameter, LSL, CL, USL, Part, Machine, empNumber];
+
+    // Execute query
+    await user.sequelize.query(query, {
+      replacements: replacements,
+      type: user.sequelize.QueryTypes.INSERT,
+    });
+
+    res.json({
+      api_result: "ok",
+    });
+  } catch (error) {
+    console.error("Database Error:", error);
+    res.status(500).json({
+      error: error.message,
+      api_result: "nok",
+    });
+  }
+});
+
+
+
+
+
+
 
 router.get(
   "/report/:model/:Parameter",
@@ -78,11 +154,55 @@ router.get(
      and Part='${Parameter}'
      `);
 
+
       var listRawData = [];
       listRawData.push(result[0]);
 
+      let result_no_parameter = await user.sequelize.query(`
+        DECLARE @tb_Fullname TABLE (Fullname VARCHAR(MAX), Model VARCHAR(MAX), Machine VARCHAR(MAX));
+        
+        -- Insert the results of the query into the table variable
+          INSERT INTO @tb_Fullname (Fullname, Model)
+SELECT DISTINCT [tbMasterItemNo].ModelShortName AS Fullname, [tbMasterItemNo].ModelGroup AS Model
+		FROM [Component_Master].[dbo].[tbMasterItemNo]
+		WHERE ModelGroup NOT IN ('All Model', '3SEFCC','ALL','3SEFDB','3SESIN')and  ModelGroup = '${model}';
+        
+        -- Use the table variable in subsequent queries
+        WITH tb_para AS (
+            SELECT DISTINCT [Parameter], [Part], [Model] ,Machine
+            FROM [Component_Master].[dbo].[Master_matchings]
+            WHERE Part = '${Parameter}' 
+          --and Model = '${model}'
+        )
+        ,tb_Machine AS (
+            SELECT DISTINCT Machine
+            FROM [Component_Master].[dbo].[Master_matchings]
+            WHERE Part = '${Parameter}' 
+          and Model = '${model}'
+        ),
+        where_Model AS (
+            SELECT DISTINCT [Parameter]
+            FROM [Component_Master].[dbo].[Master_matchings]
+            WHERE Model = '${model}'
+        )
+        
+        SELECT DISTINCT fn.Fullname, fn.Model, tb_para.Parameter AS No_Parameter, 
+                        '' AS [LSL], '' AS [CL], '' AS [USL], 
+                        '${Parameter}' AS [Part],'' as [Machine],'' as [empNumber],GETDATE() as [createdAt],GETDATE() as [updatedAt]
+        FROM tb_para 
+        LEFT JOIN where_Model
+            ON tb_para.Parameter = where_Model.Parameter 
+        CROSS JOIN @tb_Fullname fn  -- Cross join with the table variable
+        WHERE where_Model.Parameter IS NULL`,
+            {
+              replacements: { model: model, Process: Parameter },
+              type: user.sequelize.QueryTypes.SELECT,
+            });
+console.log(result_no_parameter);
+
       res.json({
         result: result[0],
+        result_no_parameter: result_no_parameter,
         listRawData,
         api_result: "ok",
       });
@@ -255,80 +375,7 @@ router.get("/update/:id/:Fullname/:model/:Parameter/:LSL/:CL/:USL/:Part/:Machine
 
 
 
-router.get("/report2/:QANumber", async (req, res) => {
-  try {
-    const { QANumber } = req.params;
-    let result = await user.sequelize.query(`select	[tbVisualInspection].[InspectionDate] as Date ,
-    [InspectionShift] as Shift,
-    [tbVisualInspection].[ModelNumber] as Model_NO,
-    [tbVisualInspection].[Model_group] as Model_group,
-    [tbVisualInspection].[Model_Name] as Model_Name,
-    'L'+[tbQANumber].[Line_No] as Line,
-    [QAInspection].[dbo].[tbVisualInspection].[QANumber] as QA_Number,
-    [tbQANumber].[Lotsize] as QA_QTY,
-    [QAInspection].[dbo].[tbQANumber].[MONumber] as MO_Number,
-    [tbQANumber].[DateCode] as Date_Code,
-    [tbQANumber].[MOQTY] as MO_QTY,
-    [tbVisualInspection].[InspectionType] as Inspection_Type,
-    [tbVisualInspection].[Vis_Round] as Inspection_Round,
-    [tbVisualInspection].[InspectionResult] as Inspection_Result,
-    [tbVisualInspection].[SamplingLevel] as Sampling_Level,
-    [tbVisualInspection].[SamplingQTY] as Sampling_QTY, 
-    [tbQANumber].[Base] as Base,
-    [tbQANumber].[Ramp] as Ramp,
-    [tbQANumber].[Hub] as Hub,
-    [tbQANumber].[Magnet] as Magnet,
-    [tbQANumber].[FPC] as FPC,
-    [tbQANumber].[Diverter] as Diverter,
-    [tbQANumber].[Crash_Stop] as Crash_Stop,
-    [tbQANumber].[SupporterName] as Supporter_Name,
-    [tbVisualInspection].[RecordBy] as Record_By,
-    [tbVisualInspection].[VisualName] as Visual_Name,
-    [tbVisualInspection].[VisualTime] as Visual_Time,
-    [tbQANumber].[CO2] as MC_CO2,[Emp_CO2] as Emp_CO2,
-    [tbQANumber].[SpecialControl1] as SpecialControl1 ,
-    [tbQANumber].[SpecialControl2] as SpecialControl2,
-    [tbQANumber].[SpecialControl3] as SpecialControl3,
-    [tbQANumber].[SpecialControl4] as SpecialControl4,
-    [tbQANumber].[SpecialControl5] as SpecialControl5,
-    [tbVisualInspection].[InsNumber] as Inspection_Number
-    ,[Reject_visual].[Location] as Location
-,[Reject_visual].[Defect_NG] as Defect_NG
-,[Reject_visual].[Detail] as Detail
-,[Reject_visual].[QTY] as QTY
-    ,[Reject_visual].[Step] as Step
-    ,[Reject_visual].[Reject_level] as Reject_level
-    ,[Reject_visual].[Major_Category] as Major_Category
-    ,[tbVisualInspection].[Sorting_criteria] as Sorting_criteria
-,[tbVisualInspection].[Time_VMI] as Time_VMI
-,[tbVisualInspection].[Remark_VMI] as Remark_VMI
-,[tbQANumber].[Rev] as REV
-,[tbQANumber].[Remark] as Remark
-,[Remark2_QA]
-FROM [QAInspection].[dbo].[tbVisualInspection]
-INNER JOIN [QAInspection].[dbo].[tbQANumber]
-ON [QAInspection].[dbo].[tbQANumber].[QANumber] = [QAInspection].[dbo].[tbVisualInspection].[QANumber]
-FULL JOIN [QAInspection].[dbo].[Reject_visual]
-ON [Reject_visual].Inspection=[tbVisualInspection].InsNumber
-where [tbVisualInspection].[QANumber] like '${QANumber}%'
-ORDER BY [QAInspection].[dbo].[tbVisualInspection].[QANumber]`);
 
-    var listRawData2 = [];
-    listRawData2.push(result[0]);
-
-    res.json({
-      result: result[0],
-      listRawData2,
-      api_result: "ok",
-    });
-  } catch (error) {
-    console.log(error);
-    res.json({
-      error,
-      api_result: "nok",
-    });
-  }
-});
 
 
 module.exports = router;

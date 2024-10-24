@@ -31,8 +31,8 @@ router.get("/barcodemotor/:barcodemotor", async (req, res) => {
 		 from set1
 		  left join [TransportData].[dbo].[Set_Lot]  
 		  on set1.Barcode = [Set_Lot].Barcode  
-          LEFT join [TransportData].[dbo].[Divertor]
-          on set1.Barcode = Divertor.Barcode
+      LEFT join [TransportData].[dbo].[Divertor]
+      on set1.Barcode = Divertor.Barcode
          where set1.Barcode  = '${barcodemotor}'
           )
         
@@ -103,8 +103,8 @@ router.get("/barcodemotor/:barcodemotor", async (req, res) => {
             ,[Imbal_Static]
         FROM [SPD_Fac2].[dbo].[AxialPlay_Auto_Fac2] as A
         join set7
-          on set7.Barcode = A.[Barcode] 
-         where A.Time = (select max ([Time]) FROM  [SPD_Fac2].[dbo].[AxialPlay_Auto_Fac2]  where [Barcode] =A.Barcode )
+        on set7.Barcode = A.[Barcode] 
+        where A.Time = (select max ([Time]) FROM  [SPD_Fac2].[dbo].[AxialPlay_Auto_Fac2]  where [Barcode] =A.Barcode )
         )
         
         ,set9 as (
@@ -156,15 +156,15 @@ router.get("/barcodemotor/:barcodemotor", async (req, res) => {
            ,[R_max_min] 
            ,[Bemf_balance]  as Bemfbalance
           from set2 
-     left join set3
+          left join set3
           on set2.Barcode = set3.Barcode
-      LEFT     join set4
+          LEFT join set4
           on set2.Barcode = set4.Barcode
-       left    join set5
+          left join set5
           on set2.Barcode = set5.Barcode
-        left  join set6
+          left join set6
           on set2.Barcode = set6.Barcode
-         left  join set9
+          left join set9
           on set2.Barcode = set9.Barcode_Motor
           where set2.[Barcode]  =  '${barcodemotor}'`);
 
