@@ -73,6 +73,58 @@ router.get("/process", async (req, res) => {
   }
 });
 
+router.get("/design/:selectdesign/:start", async (req, res) => {
+  
+  try {
+    const { selectdesign,start } = req.params;
+  
+       let resultGraph = await user.sequelize.query(`
+     exec [Oneday_ReadtimeData].[dbo].[NG_Summary_Monthly_Design] '${start}','${selectdesign}'`)
+  let PivotTable = [];
+  let xAxis = resultGraph[0].map((item) => item.Hour);
+  let pivot_columns = Object.keys(resultGraph[0][0]).filter((key) => !['Month', 'Index', 'Line'].includes(key));
+
+  for (let key in pivot_columns) {
+    let seriesData = resultGraph[0].map((item) => {
+      let value = item[pivot_columns[key]];
+      return value !== null ? value : 0;
+    });
+  
+    let seriesType = 'column'; // Default type is 'column'
+  
+    // Check if the series name is 'Output' or 'Target', and set the type to 'line' accordingly
+    if ( pivot_columns[key] === 'Total_NG'|| pivot_columns[key] === 'Actual_Input' ) {
+      seriesType = 'line';
+    }
+  
+    PivotTable.push({
+      name: pivot_columns[key],
+      type: seriesType,
+      data: seriesData,
+    });
+  }
+  
+  // Now PivotTable contains columns and lines based on the condition
+  console.log(PivotTable);
+  
+    var listRawData = [];
+    listRawData.push(resultGraph[0]);
+    res.json({
+      resultGraph: resultGraph[0],
+      listRawData,
+     
+      PivotTable: PivotTable,
+      xAxis,
+      api_result: "ok",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      error,
+      api_result: "nok",
+    });
+  }
+});
 
 router.get("/LARPP/:year/:start", async (req, res) => {
   
