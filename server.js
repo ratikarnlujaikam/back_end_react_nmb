@@ -111,11 +111,11 @@ app.use("/api/trend_master",require("./api/api_trendmaster_values"));
 app.use("/api/side_menu",require("./api/api_side_menu"));
 
 // app.use("/api/missing_part", require("./api/api_Missing_part"));
-// app.use("/api/downtime", require("./api/api_Mainplan"));
+app.use("/api/downtime", require("./api/api_Mainplan"));
 
-// app.use("/api/importment_downtime", require("./api/api_importment_downtime"));
+app.use("/api/importment_downtime", require("./api/api_importment_downtime"));
 
-// app.use("/api/downtime", require("./api/api_Mainplan"));
+
 
 app.use("/api/Projection",require("./api/api_graph_Projection"));
 app.use("/api/Unpacking",require("./api/api_Unpacking"));
