@@ -105,7 +105,7 @@ router.get("/design/:selectdesign/:start", async (req, res) => {
   }
   
   // Now PivotTable contains columns and lines based on the condition
-  console.log(PivotTable);
+    console.log(PivotTable);
   
     var listRawData = [];
     listRawData.push(resultGraph[0]);
@@ -128,30 +128,13 @@ router.get("/design/:selectdesign/:start", async (req, res) => {
 
 router.get("/LARPP/:year/:start", async (req, res) => {
   
-//   try {
-//     var result = [[]];
-//     const { year,start } = req.params;
-//     const Line = year.replace('_', '/');
-//     if (Line !== '**ALL**') {
-//       var resultGraph = await user.sequelize.query(`
-//       exec [Oneday_ReadtimeData].[dbo].[NG_Summary_Monthly] '${start}','${Line}'; 
-
-//    `   )}else{
-
-//     var resultGraph = await user.sequelize.query(`
-//     exec [Oneday_ReadtimeData].[dbo].[NG_Summary_Monthly_AllLine] '${start}'; 
-
-//  `   )
-//    }
-
-   try {
+  try {
     var result = [[]];
     const { year,start } = req.params;
     const Line = year.replace('_', '/');
     if (Line !== '**ALL**') {
       var resultGraph = await user.sequelize.query(`
       exec [Oneday_ReadtimeData].[dbo].[NG_Summary_Monthly] '${start}','${Line}'; 
-      ---exec [Oneday_ReadtimeData].[dbo].[NG_Summary_Monthly_MakeData] '${start}','${Line}'; 
 
    `   )}else{
 
@@ -159,7 +142,7 @@ router.get("/LARPP/:year/:start", async (req, res) => {
     exec [Oneday_ReadtimeData].[dbo].[NG_Summary_Monthly_AllLine] '${start}'; 
 
  `   )
-}
+   }
 
    
     
@@ -167,6 +150,8 @@ router.get("/LARPP/:year/:start", async (req, res) => {
   
   let PivotTable = [];
   let xAxis = resultGraph[0].map((item) => item.Hour);
+  console.log("monthly",xAxis);
+  
   let pivot_columns = Object.keys(resultGraph[0][0]).filter((key) => !['Month', 'Index', 'Line'].includes(key));
 
   
@@ -192,7 +177,7 @@ router.get("/LARPP/:year/:start", async (req, res) => {
   
   // Now PivotTable contains columns and lines based on the condition
   console.log(PivotTable);
-  
+  console.log("resultGraph",resultGraph)
     var listRawData = [];
     listRawData.push(resultGraph[0]);
     res.json({
