@@ -56,58 +56,37 @@ router.get("/LARPP/:startDate", async (req, res) => {
     `);
 
   // result_1 เป็น Detail Dashboard
-  // ไม่ต้อง join line เพราะ  ไปทำเงื่อนไข ไว้ ที่ หน้า Web ว่า ถ้า line = line ให้โชว์ RowNum,NG,Equipment_No.,Request,Equipment
+  // ไม่ต้อง join line เพราะ  ไปทำเงื่อนไข ไว้ ที่ หน้า Web ว่า ถ้า line = line ให้โชว์ RowNum,TimeDifferenceInMinutes,Equipment_No.,Request,Equipment
   // where วันที่ ปัจจุบัน เป็น MFG Date
+
+  //All downtime
     const result_1 = await user.sequelize.query(`
 
 
     SELECT 
-    REPLACE([Line],'(Fac2)', '') as [Line],
+    [Line],
     [Create],
-    DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) AS NG,
+    DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) AS TimeDifferenceInMinutes,
     ROW_NUMBER() OVER (PARTITION BY [Line] ORDER BY DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) DESC) AS RowNum,
     [Equipment_No.],
     [Request],
     [Equipment]
 FROM 
-    [LinkedServer1].[PE_maintenance].[dbo].[MaintPlan_Downtime]
+     [PE_maintenance].[dbo].[MaintPlan_Downtime]
 WHERE 
     [Started] = [Closed]
     AND [Create] BETWEEN CAST(CONVERT(date, GETDATE()) AS datetime) + '07:00:00' AND CAST(DATEADD(DAY, 1, CONVERT(date, GETDATE())) AS datetime) + '06:59:59'
 order by DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) desc
 
     `);
-
-    const continue_DT = await user.sequelize.query(`
- WITH continue_DT AS 
- 
-(
- SELECT [Line],DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) AS Losstime,
- ROW_NUMBER() OVER (PARTITION BY [Line] ORDER BY DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) DESC) AS RowNum
-  FROM [LinkedServer1].[PE_maintenance].[dbo].[MaintPlan_Downtime]
-  WHERE  [Started] = [Closed] AND [Create] BETWEEN CAST(CONVERT(date, GETDATE()) AS datetime) + '07:00:00' 
-  AND CAST(DATEADD(DAY, 1, CONVERT(date, GETDATE())) AS datetime) + '06:59:59' union all
-  select Line as xLine,sum([Downtime(min)]) as [Losstime],1 AS RowNum FROM [LinkedServer1].[PE_maintenance].[dbo].[MaintPlan_Downtime]
-WHERE [Create] BETWEEN CAST(CONVERT(date, GETDATE()) AS datetime) + '07:00:00'
-AND CAST(DATEADD(DAY, 1, CONVERT(date, GETDATE())) AS datetime) + '06:59:59'
-and Closed != '1900-01-01 00:00:00.000' 
-
-group by Line)
- ,set_line as (
-  SELECT distinct [Line] as Line
-  FROM [Component_Master].[dbo].[Line_for_QRcode]
-  where [Line] != 'ALL' and [Line] != 'D-4'and [Line] != ''
-    )
-select sum(Losstime)/60 as [Total_DT],
-cast((sum(Losstime) * 60)/( select sum(Accum_Actual) 
-FROM [Oneday_ReadtimeData].[dbo].[Summary_Actual_perHr]
- where MfgDate = case when DATEPART(hour, getdate()) >= 7 then CONVERT(date, GETDATE())
- else CONVERT(date, GETDATE()-1) end) as decimal(10,2)) as [Second_perPcs]
-from set_line 
-left join continue_DT
-on set_line.Line  = continue_DT.[Line]
-where RowNum = 1
-
+//.9%% .10
+    const continue_DT = await user1.sequelize.query(`
+    SELECT 
+    
+    REPLACE(FORMAT(CAST(CAST(SUM(cast([Downtime(min)] as INT))/60  AS VARCHAR(8))   + '.' + CAST(FORMAT((SUM(cast([Downtime(min)]as INT) )% 60), 'D2')   AS VARCHAR(8))  AS float(8)), 'N2'), '.', '.')  as [Total_DT] 
+    ,'0' as [Second_perPcs],REPLACE(FORMAT(CAST(CAST(SUM(cast([Reaction_time(min)]as INT))/60  AS VARCHAR(8))   + '.' + CAST(FORMAT((SUM(cast([Reaction_time(min)]as INT) )% 60), 'D2')   AS VARCHAR(8))  AS float(8)), 'N2'), '.', '.') as [Total_DL] 
+    FROM [PE_maintenance].[dbo].[MaintPlan_Downtime] where Mfgdate = '${startDate}' and Cost_cente like'%Clean room%' and Line like '%-%'
+    
 
 `)
 
@@ -138,7 +117,6 @@ where RowNum = 1
     });
   }
 });
-
 router.get("/LARPP_WR/:startDate/:Process", async (req, res) => {
   try {
     const {startDate,Process} = req.params;
@@ -148,8 +126,7 @@ router.get("/LARPP_WR/:startDate/:Process", async (req, res) => {
 
     WITH sum_Problem AS  
     (
-        SELECT
-            [Line],
+        SELECT   REPLACE([Line],'(Fac2)', '') as [Line],
             DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) AS NG,
             ROW_NUMBER() OVER (PARTITION BY [Line] ORDER BY DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) DESC) AS RowNum
         FROM
@@ -211,7 +188,7 @@ router.get("/LARPP_WR/:startDate/:Process", async (req, res) => {
     `);
 
   // result_1 เป็น Detail Dashboard
-  // ไม่ต้อง join line เพราะ  ไปทำเงื่อนไข ไว้ ที่ หน้า Web ว่า ถ้า line = line ให้โชว์ RowNum,NG,Equipment_No.,Request,Equipment
+  // ไม่ต้อง join line เพราะ  ไปทำเงื่อนไข ไว้ ที่ หน้า Web ว่า ถ้า line = line ให้โชว์ RowNum,TimeDifferenceInMinutes,Equipment_No.,Request,Equipment
   // where วันที่ ปัจจุบัน เป็น MFG Date
     const result_1 = await user.sequelize.query(`
 
@@ -219,7 +196,7 @@ router.get("/LARPP_WR/:startDate/:Process", async (req, res) => {
     SELECT 
     [Line],
     [Create],
-    DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) AS NG,
+    DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) AS TimeDifferenceInMinutes,
     ROW_NUMBER() OVER (PARTITION BY [Line] ORDER BY DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) DESC) AS RowNum,
     [Equipment_No.],
     [Request],
@@ -298,7 +275,7 @@ router.get("/LARPP_Fec2/:startDate/:Process", async (req, res) => {
     const {startDate,Process} = req.params;
 // result เป็น Data Dashboard 
 // เงื่อนไข Dashboard ต้อง ใช้ line เป็น หลัก  โดยเอา Detail ของแต่ล่ะ line มา left join 
-var result = await user1.sequelize.query(`
+    var result = await user1.sequelize.query(`
 
     WITH sum_Problem AS  
     (
@@ -363,15 +340,15 @@ var result = await user1.sequelize.query(`
     `);
 
   // result_1 เป็น Detail Dashboard
-  // ไม่ต้อง join line เพราะ  ไปทำเงื่อนไข ไว้ ที่ หน้า Web ว่า ถ้า line = line ให้โชว์ RowNum,NG,Equipment_No.,Request,Equipment
+  // ไม่ต้อง join line เพราะ  ไปทำเงื่อนไข ไว้ ที่ หน้า Web ว่า ถ้า line = line ให้โชว์ RowNum,TimeDifferenceInMinutes,Equipment_No.,Request,Equipment
   // where วันที่ ปัจจุบัน เป็น MFG Date
     const result_1 = await user.sequelize.query(`
 
 
     SELECT 
-     REPLACE([Line],'(Fac2)', '') as [Line],
+    [Line],
     [Create],
-    DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) AS NG,
+    DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) AS TimeDifferenceInMinutes,
     ROW_NUMBER() OVER (PARTITION BY [Line] ORDER BY DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) DESC) AS RowNum,
     [Equipment_No.],
     [Request],
@@ -463,8 +440,7 @@ router.get("/LARPP_Washing/:startDate/:Process", async (req, res) => {
 
     WITH sum_Problem AS  
     (
-        SELECT
-            [Line],
+        SELECT   REPLACE([Line],'(Fac2)', '') as [Line],
             DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) AS NG,
             ROW_NUMBER() OVER (PARTITION BY [Line] ORDER BY DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) DESC) AS RowNum
         FROM
@@ -527,15 +503,15 @@ router.get("/LARPP_Washing/:startDate/:Process", async (req, res) => {
     `);
 
   // result_1 เป็น Detail Dashboard
-  // ไม่ต้อง join line เพราะ  ไปทำเงื่อนไข ไว้ ที่ หน้า Web ว่า ถ้า line = line ให้โชว์ RowNum,NG,Equipment_No.,Request,Equipment
+  // ไม่ต้อง join line เพราะ  ไปทำเงื่อนไข ไว้ ที่ หน้า Web ว่า ถ้า line = line ให้โชว์ RowNum,TimeDifferenceInMinutes,Equipment_No.,Request,Equipment
   // where วันที่ ปัจจุบัน เป็น MFG Date
     const result_1 = await user.sequelize.query(`
 
 
     SELECT 
-    [Equipment] as Line,
+    [Equipment] as [Line],
      [Create],
-     DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) AS NG,
+     DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) AS TimeDifferenceInMinutes,
      ROW_NUMBER() OVER (PARTITION BY [Line] ORDER BY DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) DESC) AS RowNum,
      [Equipment_No.],
      [Request],
@@ -682,7 +658,7 @@ router.get("/LARPP_Zone/:startDate/:Process", async (req, res) => {
     `);
 
   // result_1 เป็น Detail Dashboard
-  // ไม่ต้อง join line เพราะ  ไปทำเงื่อนไข ไว้ ที่ หน้า Web ว่า ถ้า line = line ให้โชว์ RowNum,NG,Equipment_No.,Request,Equipment
+  // ไม่ต้อง join line เพราะ  ไปทำเงื่อนไข ไว้ ที่ หน้า Web ว่า ถ้า line = line ให้โชว์ RowNum,TimeDifferenceInMinutes,Equipment_No.,Request,Equipment
   // where วันที่ ปัจจุบัน เป็น MFG Date
     const result_1 = await user.sequelize.query(`
 
@@ -690,7 +666,7 @@ router.get("/LARPP_Zone/:startDate/:Process", async (req, res) => {
     SELECT 
     [Equipment_No.] as Line,
      [Create],
-     DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) AS NG,
+     DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) AS TimeDifferenceInMinutes,
      ROW_NUMBER() OVER (PARTITION BY [Line] ORDER BY DATEDIFF(MINUTE, CONVERT(time, [Create]), CONVERT(time, GETDATE())) DESC) AS RowNum,
      [Equipment_No.],
      [Request],
@@ -763,6 +739,4 @@ where RowNum = 1
     });
   }
 });
-
-
 module.exports = router;

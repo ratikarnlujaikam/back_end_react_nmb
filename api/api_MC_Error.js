@@ -257,7 +257,7 @@ router.get(
   
     EXECUTE sp_executesql @query;
   `);
-  console.log(resultGraph);
+      console.log(resultGraph);
 
       let PivotTable = [];
       let xAxis = resultGraph[0].map((item) => item.Date);
@@ -404,6 +404,65 @@ router.get(
       console.log(error);
       res.json({
         error,
+        api_result: "nok",
+      });
+    }
+  }
+);
+router.get(
+  "/MC_ERROR_Data/:Table/:Line/:startDate/:finishDate",
+  async (req, res) => {
+    try {
+      const { startDate, finishDate, Table, Line } = req.params;
+      let result;
+
+      if (Table.includes("Auto") || Table.includes("Helium")) {
+        // Execute query for specific tables
+        result = await user1.sequelize.query(
+          `SELECT [Error], [Occurred], [Restored], [Line], [Date] 
+          FROM [PE_maintenance].[dbo].[${Table}] 
+          WHERE [Line] = '${Line}' 
+          AND [Date] BETWEEN '${startDate}' AND '${finishDate}' 
+          ORDER BY [Occurred] ASC`
+        );
+      } else {
+        result = await user1.sequelize.query(
+          `SELECT * 
+          FROM [PE_maintenance].[dbo].[${Table}] 
+          WHERE [Line] = '${Line}' 
+          AND [Date] BETWEEN '${startDate}' AND '${finishDate}' 
+          ORDER BY [Date], [Time] ASC`
+        );
+      }
+      // Format the Restored column
+      const formatISODate = (dateTime) => {
+        const date = new Date(dateTime);
+        return isNaN(date.getTime()) ? null : date.toISOString(); // Format to ISO 8601 or null if invalid
+      };
+
+      // Process result: Format Restored and Occurred columns
+      const listRawData2 = result[0].map((row) => ({
+        ...row,
+        Occurred: row.Occurred ? formatISODate(row.Occurred) : null,
+        Restored: row.Restored ? formatISODate(row.Restored) : null,
+        Line: ` ${row.Line}`, // Add a leading space
+      }));
+      // // Process result: Add a space to the Line column value
+      // const listRawData2 = result[0].map((row) => ({
+      //   ...row,
+
+      // }));
+
+      // Send response
+      res.json({
+        result: listRawData2,
+        api_result: "ok",
+      });
+    } catch (error) {
+      // Log error and send response
+      console.error("Error occurred:", error);
+      res.json({
+        error: error.message || error,
         api_result: "nok",
       });
     }
