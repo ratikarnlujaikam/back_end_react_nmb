@@ -122,6 +122,9 @@ app.use("/api/Unpacking",require("./api/api_Unpacking"));
 app.use("/api/pc_inventory",require("./api/api_pc_inventory"));
 
 app.use("/api/DBMaster",require("./api/api_DBmaster"));
+
+// Server.js
+app.use("/api/NGlotrecord",require("./api/api_NGlotrecord"));
 //NAS
 const Url = "192.168.101.13";
 const MailUrl = "192.168.101.120"
