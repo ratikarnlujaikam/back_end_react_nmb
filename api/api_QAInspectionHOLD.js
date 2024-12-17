@@ -248,9 +248,7 @@ router.get(
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -589,9 +587,7 @@ WHEN SUBSTRING([Invoie_ID], 1, 3) = 'WHC'  THEN 'Shipped-NV'+':'+[Invoie_ID]
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -930,9 +926,7 @@ WHEN SUBSTRING([Invoie_ID], 1, 3) = 'WHC'  THEN 'Shipped-NV'+':'+[Invoie_ID]
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -1271,9 +1265,7 @@ WHEN SUBSTRING([Invoie_ID], 1, 3) = 'WHC'  THEN 'Shipped-NV'+':'+[Invoie_ID]
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -1612,9 +1604,7 @@ WHEN SUBSTRING([Invoie_ID], 1, 3) = 'WHC'  THEN 'Shipped-NV'+':'+[Invoie_ID]
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -1954,9 +1944,7 @@ WHEN SUBSTRING([Invoie_ID], 1, 3) = 'WHC'  THEN 'Shipped-NV'+':'+[Invoie_ID]
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -2297,9 +2285,7 @@ WHEN SUBSTRING([Invoie_ID], 1, 3) = 'WHC'  THEN 'Shipped-NV'+':'+[Invoie_ID]
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -2639,9 +2625,7 @@ WHEN SUBSTRING([Invoie_ID], 1, 3) = 'WHC'  THEN 'Shipped-NV'+':'+[Invoie_ID]
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -2981,9 +2965,7 @@ WHEN SUBSTRING([Invoie_ID], 1, 3) = 'WHC'  THEN 'Shipped-NV'+':'+[Invoie_ID]
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -3322,9 +3304,7 @@ WHEN SUBSTRING([Invoie_ID], 1, 3) = 'WHC'  THEN 'Shipped-NV'+':'+[Invoie_ID]
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -3664,9 +3644,7 @@ WHEN SUBSTRING([Invoie_ID], 1, 3) = 'WHC'  THEN 'Shipped-NV'+':'+[Invoie_ID]
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -4007,9 +3985,7 @@ WHEN SUBSTRING([Invoie_ID], 1, 3) = 'WHC'  THEN 'Shipped-NV'+':'+[Invoie_ID]
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -4350,9 +4326,7 @@ WHEN SUBSTRING([Invoie_ID], 1, 3) = 'WHC'  THEN 'Shipped-NV'+':'+[Invoie_ID]
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -4693,9 +4667,7 @@ WHEN SUBSTRING([Invoie_ID], 1, 3) = 'WHC'  THEN 'Shipped-NV'+':'+[Invoie_ID]
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -5036,9 +5008,7 @@ WHEN SUBSTRING([Invoie_ID], 1, 3) = 'WHC'  THEN 'Shipped-NV'+':'+[Invoie_ID]
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -5379,9 +5349,7 @@ sorting_datetime as Unpack_datetime,
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -5739,9 +5707,7 @@ router.get("/report2/:QANumber", async (req, res) => {
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -6090,9 +6056,7 @@ router.get("/report3/:Holdnumber", async (req, res) => {
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -6438,9 +6402,7 @@ router.get("/HoldALL", async (req, res) => {
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,
@@ -6787,9 +6749,7 @@ router.get("/HoldForpc", async (req, res) => {
             CASE
                 WHEN QA_result = 'REJECT' THEN 'Wait sorting'
             ELSE [Disposition] END AS [Disposition],
-            CASE
-                WHEN QA_result = 'REJECT' THEN Date
-            ELSE Hold_Date END AS Hold_Date,
+            Hold_Date,
             [Tag_HoldQA].[Remark],
   
             Hold_Period,

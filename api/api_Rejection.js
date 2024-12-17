@@ -83,7 +83,7 @@ router.get(
           ,[Defect_NG] as NG
           ,[Detail] as Detail
           ,[QTY] as QTY
-          ,[tbVisualInspection].[Location] as Location
+          ,[Reject_visual].[Location] as Location
           ,[CO2] as CO2
           ,[Emp_CO2] as Emp_CO2
           ,[RecordBy] as RecordBy
@@ -119,6 +119,7 @@ router.get(
 				  [QAInspection].[dbo].[tbQANumber].Line_No, 
 				  [QAInspection].[dbo].[tbQANumber].CO2, 
                   [QAInspection].[dbo].[tbQANumber].Emp_CO2
+                  ,[Reject_visual].[Location]
           ORDER BY [InspectionType],[InspectionDate],[InspectionShift],[Line_No],[tbVisualInspection].[QANumber],[Vis_Round]`);
       } else if (model == "**ALL**"  && insType != "**ALL**") {
         var result = await user.sequelize.query(`
@@ -140,7 +141,7 @@ router.get(
         ,[Defect_NG] as NG
         ,[Detail] as Detail
         ,[QTY] as QTY
-        ,[tbVisualInspection].[Location] as Location
+        ,[Reject_visual].[Location] as Location
         ,[CO2] as CO2
         ,[Emp_CO2] as Emp_CO2
         ,[RecordBy] as RecordBy
@@ -176,7 +177,7 @@ router.get(
 				  [QAInspection].[dbo].[tbVisualInspection].InsNumber, 
 				  [QAInspection].[dbo].[tbQANumber].Line_No, 
 				  [QAInspection].[dbo].[tbQANumber].CO2, 
-                  [QAInspection].[dbo].[tbQANumber].Emp_CO2
+                  [QAInspection].[dbo].[tbQANumber].Emp_CO2,[Reject_visual].[Location]
           ORDER BY [InspectionType],[InspectionDate],[InspectionShift],[Line_No],[tbVisualInspection].[QANumber],[Vis_Round]`);
       } else if (model != "**ALL**"  &&insType == "**ALL**") {
         var result = await user.sequelize.query(`
@@ -198,7 +199,7 @@ router.get(
         ,[Defect_NG] as NG
         ,[Detail] as Detail
         ,[QTY] as QTY
-        ,[tbVisualInspection].[Location] as Location
+        ,[Reject_visual].[Location] as Location
         ,[CO2] as CO2
         ,[Emp_CO2] as Emp_CO2
         ,[RecordBy] as RecordBy
@@ -234,7 +235,7 @@ router.get(
 				  [QAInspection].[dbo].[tbVisualInspection].InsNumber, 
 				  [QAInspection].[dbo].[tbQANumber].Line_No, 
 				  [QAInspection].[dbo].[tbQANumber].CO2, 
-                  [QAInspection].[dbo].[tbQANumber].Emp_CO2
+                  [QAInspection].[dbo].[tbQANumber].Emp_CO2 ,[Reject_visual].[Location]
           ORDER BY [InspectionType],[InspectionDate],[InspectionShift],[Line_No],[tbVisualInspection].[QANumber],[Vis_Round]`);
       } else {
         var result = await user.sequelize.query(`
@@ -256,7 +257,7 @@ router.get(
         ,[Defect_NG] as NG
         ,[Detail] as Detail
         ,[QTY] as QTY
-        ,[tbVisualInspection].[Location] as Location
+        ,[Reject_visual].[Location] as Location
         ,[CO2] as CO2
         ,[Emp_CO2] as Emp_CO2
         ,[RecordBy] as RecordBy
@@ -292,7 +293,7 @@ router.get(
 				  [QAInspection].[dbo].[tbVisualInspection].InsNumber, 
 				  [QAInspection].[dbo].[tbQANumber].Line_No, 
 				  [QAInspection].[dbo].[tbQANumber].CO2, 
-                  [QAInspection].[dbo].[tbQANumber].Emp_CO2
+                  [QAInspection].[dbo].[tbQANumber].Emp_CO2 ,[Reject_visual].[Location]
           ORDER BY [InspectionType],[InspectionDate],[InspectionShift],[Line_No],[tbVisualInspection].[QANumber],[Vis_Round]`);
       }
 
@@ -334,7 +335,7 @@ router.get("/RejectByQANO/:QANumber", async (req, res) => {
     ,[Defect_NG] as NG
     ,[Detail] as Detail
     ,[QTY] as QTY
-    ,[tbVisualInspection].[Location] as Location
+    ,[Reject_visual].[Location] as Location
     ,[CO2] as CO2
     ,[Emp_CO2] as Emp_CO2
     ,[RecordBy] as RecordBy
@@ -369,7 +370,7 @@ router.get("/RejectByQANO/:QANumber", async (req, res) => {
 				  [QAInspection].[dbo].[tbVisualInspection].InsNumber, 
 				  [QAInspection].[dbo].[tbQANumber].Line_No, 
 				  [QAInspection].[dbo].[tbQANumber].CO2, 
-                  [QAInspection].[dbo].[tbQANumber].Emp_CO2
+                  [QAInspection].[dbo].[tbQANumber].Emp_CO2 ,[Reject_visual].[Location]
     ORDER BY [InspectionType],[InspectionDate],[InspectionShift],[Line_No],[tbVisualInspection].[QANumber],[Vis_Round]`);
 
     var listRawData = [];
