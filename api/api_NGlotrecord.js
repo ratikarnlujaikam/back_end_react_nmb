@@ -29,8 +29,8 @@ router.get("/SummaryNGlot/:Model/:Startdate/:Finishdate/:Molot", async (req, res
     var result = [[]];
     const { Model,Molot,Startdate,Finishdate } = req.params;
       if (Model == "**ALL**" && Molot == "-") {
-      var result = await user.sequelize.query(`WITH LatestNG AS (
-    SELECT 
+      var result = await user.sequelize.query(` WITH LatestNG AS (
+    SELECT
         [NG_Detail].[MfgDate],
         [ModelGroup],
         [Item_No],
@@ -40,12 +40,12 @@ router.get("/SummaryNGlot/:Model/:Startdate/:Finishdate/:Molot", async (req, res
         SUM([NG_Detail].[Qty]) AS [Qty],
         [NG_Detail].[TimeStamp],
         ROW_NUMBER() OVER (PARTITION BY [NG_Detail].[MO] ORDER BY [NG_Detail].[TimeStamp] DESC) AS RowNum
-    FROM 
+    FROM
         [NG_Lot_Record].[dbo].[NG_Detail]
-    INNER JOIN 
-        [NG_Lot_Record].[dbo].[Register_MO] 
+    INNER JOIN
+        [NG_Lot_Record].[dbo].[Register_MO]
         ON [NG_Detail].[MO] = [Register_MO].[MO]
-    GROUP BY 
+    GROUP BY
         [NG_Detail].[MfgDate],
         [ModelGroup],
         [Item_No],
@@ -56,7 +56,7 @@ router.get("/SummaryNGlot/:Model/:Startdate/:Finishdate/:Molot", async (req, res
 ),
 
 RawActual AS (
-    SELECT 
+    SELECT
         [Model],
         [Line],
         [MO],
@@ -67,20 +67,20 @@ RawActual AS (
         [MfgDate],
         [Remark],
         ROW_NUMBER() OVER (PARTITION BY [Motor] ORDER BY [TimeStamp] DESC) AS RowNum
-    FROM 
+    FROM
         [NG_Lot_Record].[dbo].[RW_SC]
 ),
 
 ACTUAL AS (
-    SELECT 
+    SELECT
         [MO],
         SUM([Qty]) AS Actual_receive
-    FROM 
-        RawActual 
-    WHERE 
-        RowNum = 1 
+    FROM
+        RawActual
+    WHERE
+        RowNum = 1
         AND Remark IS NULL
-    GROUP BY 
+    GROUP BY
         [Model],
         [Line],
         [MO],
@@ -91,71 +91,75 @@ ACTUAL AS (
 ),
 
 CTE AS (
-    SELECT 
+    SELECT
         [MO],
         [Status],
         SUM([Qty]) AS QTY
-    FROM 
+    FROM
         [NG_Lot_Record].[dbo].[History_InOut]
-    WHERE 
+    WHERE
         Remark IS NULL
         AND [Status] IN ('O', 'I') -- Only Status 'O' and 'I'
-    GROUP BY 
+    GROUP BY
         [MO],
         [Status]
 ),
 
 Testing AS (
-    SELECT 
+    SELECT
         CTE_O.[MO],
         COALESCE(CTE_O.QTY, 0) AS QTY_Status_O,
         COALESCE(CTE_I.QTY, 0) AS QTY_Status_I,
         COALESCE(CTE_O.QTY, 0) - COALESCE(CTE_I.QTY, 0) AS For_Other_Testing
-    FROM 
+    FROM
         (SELECT [MO], QTY FROM CTE WHERE [Status] = 'O') CTE_O
-    LEFT JOIN 
+    LEFT JOIN
         (SELECT [MO], QTY FROM CTE WHERE [Status] = 'I') CTE_I
-    ON 
+    ON
         CTE_O.[MO] = CTE_I.[MO]
 )
 
-SELECT 
-    [MfgDate] as Date ,
-    [ModelGroup],
-    [Item_No],
-    [Line],
+SELECT
+[Inventory_Month],
+    LatestNG.[MfgDate] as Date ,
+	State,
+    LatestNG.[ModelGroup],
+    LatestNG.[Item_No],
+       'L' +LatestNG.[Line] as Line,
     LatestNG.[MO],
-    [Emp],
-    [Qty] AS NG_total,
-    CASE 
+    LatestNG.[Emp],
+    LatestNG.[Qty] AS NG_total,
+    CASE
         WHEN Actual_receive IS NULL THEN 0
-        ELSE Actual_receive  
+        ELSE Actual_receive
     END AS Actual_receive,
-    CASE 
+    CASE
         WHEN For_Other_Testing IS NULL THEN 0
-        ELSE For_Other_Testing  
+        ELSE For_Other_Testing
     END AS For_Other_Testing
-FROM 
+FROM
     LatestNG
-LEFT JOIN 
+LEFT JOIN
     ACTUAL ON LatestNG.MO = ACTUAL.MO
-LEFT JOIN 
+LEFT JOIN
     Testing ON LatestNG.MO = Testing.MO
+LEFT JOIN [NG_Lot_Record].[dbo].[Register_MO] on LatestNG.MO = Register_MO.MO 
+LEFT JOIN [NG_Lot_Record].[dbo].[Separation_Inventory] on LatestNG.MO = [Separation_Inventory].MO 
 WHERE 
     RowNum = 1 
-    and MfgDate between '${Startdate}' and '${Finishdate}'
-ORDER BY 
-   [MfgDate] DESC,
-    ModelGroup asc,
-    Item_No asc,
+    and LatestNG.MfgDate between '${Startdate}' and '${Finishdate}'
+ORDER BY
+    LatestNG.[MfgDate] DESC,
+    LatestNG.ModelGroup asc,
+    LatestNG.Item_No asc,
     Line asc,
     [MO] ASC`, {
      
       });
     }
      else if (Model == "**ALL**" && Molot != "-") {
-      var result = await user.sequelize.query(`WITH LatestNG AS (
-    SELECT 
+      var result = await user.sequelize.query(` WITH LatestNG AS (
+    SELECT
         [NG_Detail].[MfgDate],
         [ModelGroup],
         [Item_No],
@@ -165,12 +169,12 @@ ORDER BY
         SUM([NG_Detail].[Qty]) AS [Qty],
         [NG_Detail].[TimeStamp],
         ROW_NUMBER() OVER (PARTITION BY [NG_Detail].[MO] ORDER BY [NG_Detail].[TimeStamp] DESC) AS RowNum
-    FROM 
+    FROM
         [NG_Lot_Record].[dbo].[NG_Detail]
-    INNER JOIN 
-        [NG_Lot_Record].[dbo].[Register_MO] 
+    INNER JOIN
+        [NG_Lot_Record].[dbo].[Register_MO]
         ON [NG_Detail].[MO] = [Register_MO].[MO]
-    GROUP BY 
+    GROUP BY
         [NG_Detail].[MfgDate],
         [ModelGroup],
         [Item_No],
@@ -181,7 +185,7 @@ ORDER BY
 ),
 
 RawActual AS (
-    SELECT 
+    SELECT
         [Model],
         [Line],
         [MO],
@@ -192,20 +196,20 @@ RawActual AS (
         [MfgDate],
         [Remark],
         ROW_NUMBER() OVER (PARTITION BY [Motor] ORDER BY [TimeStamp] DESC) AS RowNum
-    FROM 
+    FROM
         [NG_Lot_Record].[dbo].[RW_SC]
 ),
 
 ACTUAL AS (
-    SELECT 
+    SELECT
         [MO],
         SUM([Qty]) AS Actual_receive
-    FROM 
-        RawActual 
-    WHERE 
-        RowNum = 1 
+    FROM
+        RawActual
+    WHERE
+        RowNum = 1
         AND Remark IS NULL
-    GROUP BY 
+    GROUP BY
         [Model],
         [Line],
         [MO],
@@ -216,72 +220,75 @@ ACTUAL AS (
 ),
 
 CTE AS (
-    SELECT 
+    SELECT
         [MO],
         [Status],
         SUM([Qty]) AS QTY
-    FROM 
+    FROM
         [NG_Lot_Record].[dbo].[History_InOut]
-    WHERE 
+    WHERE
         Remark IS NULL
         AND [Status] IN ('O', 'I') -- Only Status 'O' and 'I'
-    GROUP BY 
+    GROUP BY
         [MO],
         [Status]
 ),
 
 Testing AS (
-    SELECT 
+    SELECT
         CTE_O.[MO],
         COALESCE(CTE_O.QTY, 0) AS QTY_Status_O,
         COALESCE(CTE_I.QTY, 0) AS QTY_Status_I,
         COALESCE(CTE_O.QTY, 0) - COALESCE(CTE_I.QTY, 0) AS For_Other_Testing
-    FROM 
+    FROM
         (SELECT [MO], QTY FROM CTE WHERE [Status] = 'O') CTE_O
-    LEFT JOIN 
+    LEFT JOIN
         (SELECT [MO], QTY FROM CTE WHERE [Status] = 'I') CTE_I
-    ON 
+    ON
         CTE_O.[MO] = CTE_I.[MO]
 )
 
-SELECT 
-    [MfgDate] as Date ,
-    [ModelGroup],
-    [Item_No],
-    [Line],
+SELECT
+[Inventory_Month],
+    LatestNG.[MfgDate] as Date ,
+	State,
+    LatestNG.[ModelGroup],
+    LatestNG.[Item_No],
+       'L' +LatestNG.[Line] as Line,
     LatestNG.[MO],
-    [Emp],
-    [Qty] AS NG_total,
-    CASE 
+    LatestNG.[Emp],
+    LatestNG.[Qty] AS NG_total,
+    CASE
         WHEN Actual_receive IS NULL THEN 0
-        ELSE Actual_receive  
+        ELSE Actual_receive
     END AS Actual_receive,
-    CASE 
+    CASE
         WHEN For_Other_Testing IS NULL THEN 0
-        ELSE For_Other_Testing  
+        ELSE For_Other_Testing
     END AS For_Other_Testing
-FROM 
+FROM
     LatestNG
-LEFT JOIN 
+LEFT JOIN
     ACTUAL ON LatestNG.MO = ACTUAL.MO
-LEFT JOIN 
+LEFT JOIN
     Testing ON LatestNG.MO = Testing.MO
+LEFT JOIN [NG_Lot_Record].[dbo].[Register_MO] on LatestNG.MO = Register_MO.MO 
+LEFT JOIN [NG_Lot_Record].[dbo].[Separation_Inventory] on LatestNG.MO = [Separation_Inventory].MO 
 WHERE 
     RowNum = 1 
-    and MfgDate between '${Startdate}' and '${Finishdate}'
-    and  LatestNG.[MO] = '${Molot}'
-ORDER BY 
-   [MfgDate] DESC,
-    ModelGroup asc,
-    Item_No asc,
+       and  LatestNG.[MO] = '${Molot}'
+ORDER BY
+    LatestNG.[MfgDate] DESC,
+    LatestNG.ModelGroup asc,
+    LatestNG.Item_No asc,
     Line asc,
     [MO] ASC`, {
      
       });
     }
       else if(Model != "**ALL**" && Molot == "-") {
-        var result = await user.sequelize.query(`WITH LatestNG AS (
-    SELECT 
+        var result = await user.sequelize.query(` WITH LatestNG AS (
+    SELECT
         [NG_Detail].[MfgDate],
         [ModelGroup],
         [Item_No],
@@ -291,12 +298,12 @@ ORDER BY
         SUM([NG_Detail].[Qty]) AS [Qty],
         [NG_Detail].[TimeStamp],
         ROW_NUMBER() OVER (PARTITION BY [NG_Detail].[MO] ORDER BY [NG_Detail].[TimeStamp] DESC) AS RowNum
-    FROM 
+    FROM
         [NG_Lot_Record].[dbo].[NG_Detail]
-    INNER JOIN 
-        [NG_Lot_Record].[dbo].[Register_MO] 
+    INNER JOIN
+        [NG_Lot_Record].[dbo].[Register_MO]
         ON [NG_Detail].[MO] = [Register_MO].[MO]
-    GROUP BY 
+    GROUP BY
         [NG_Detail].[MfgDate],
         [ModelGroup],
         [Item_No],
@@ -307,7 +314,7 @@ ORDER BY
 ),
 
 RawActual AS (
-    SELECT 
+    SELECT
         [Model],
         [Line],
         [MO],
@@ -318,20 +325,20 @@ RawActual AS (
         [MfgDate],
         [Remark],
         ROW_NUMBER() OVER (PARTITION BY [Motor] ORDER BY [TimeStamp] DESC) AS RowNum
-    FROM 
+    FROM
         [NG_Lot_Record].[dbo].[RW_SC]
 ),
 
 ACTUAL AS (
-    SELECT 
+    SELECT
         [MO],
         SUM([Qty]) AS Actual_receive
-    FROM 
-        RawActual 
-    WHERE 
-        RowNum = 1 
+    FROM
+        RawActual
+    WHERE
+        RowNum = 1
         AND Remark IS NULL
-    GROUP BY 
+    GROUP BY
         [Model],
         [Line],
         [MO],
@@ -342,70 +349,74 @@ ACTUAL AS (
 ),
 
 CTE AS (
-    SELECT 
+    SELECT
         [MO],
         [Status],
         SUM([Qty]) AS QTY
-    FROM 
+    FROM
         [NG_Lot_Record].[dbo].[History_InOut]
-    WHERE 
+    WHERE
         Remark IS NULL
         AND [Status] IN ('O', 'I') -- Only Status 'O' and 'I'
-    GROUP BY 
+    GROUP BY
         [MO],
         [Status]
 ),
 
 Testing AS (
-    SELECT 
+    SELECT
         CTE_O.[MO],
         COALESCE(CTE_O.QTY, 0) AS QTY_Status_O,
         COALESCE(CTE_I.QTY, 0) AS QTY_Status_I,
         COALESCE(CTE_O.QTY, 0) - COALESCE(CTE_I.QTY, 0) AS For_Other_Testing
-    FROM 
+    FROM
         (SELECT [MO], QTY FROM CTE WHERE [Status] = 'O') CTE_O
-    LEFT JOIN 
+    LEFT JOIN
         (SELECT [MO], QTY FROM CTE WHERE [Status] = 'I') CTE_I
-    ON 
+    ON
         CTE_O.[MO] = CTE_I.[MO]
 )
 
-SELECT 
-    [MfgDate] as Date ,
-    [ModelGroup],
-    [Item_No],
-    [Line],
+SELECT
+[Inventory_Month],
+    LatestNG.[MfgDate] as Date ,
+	State,
+    LatestNG.[ModelGroup],
+    LatestNG.[Item_No],
+       'L' +LatestNG.[Line] as Line,
     LatestNG.[MO],
-    [Emp],
-    [Qty] AS NG_total,
-    CASE 
+    LatestNG.[Emp],
+    LatestNG.[Qty] AS NG_total,
+    CASE
         WHEN Actual_receive IS NULL THEN 0
-        ELSE Actual_receive  
+        ELSE Actual_receive
     END AS Actual_receive,
-    CASE 
+    CASE
         WHEN For_Other_Testing IS NULL THEN 0
-        ELSE For_Other_Testing  
+        ELSE For_Other_Testing
     END AS For_Other_Testing
-FROM 
+FROM
     LatestNG
-LEFT JOIN 
+LEFT JOIN
     ACTUAL ON LatestNG.MO = ACTUAL.MO
-LEFT JOIN 
+LEFT JOIN
     Testing ON LatestNG.MO = Testing.MO
+LEFT JOIN [NG_Lot_Record].[dbo].[Register_MO] on LatestNG.MO = Register_MO.MO 
+LEFT JOIN [NG_Lot_Record].[dbo].[Separation_Inventory] on LatestNG.MO = [Separation_Inventory].MO 
 WHERE 
     RowNum = 1 
-    and MfgDate between '${Startdate}' and '${Finishdate}'
-    and  ModelGroup = '${Model}'
-ORDER BY 
-    [MfgDate] DESC,
-    ModelGroup asc,
-    Item_No asc,
+    and LatestNG.MfgDate between '${Startdate}' and '${Finishdate}'
+    and  LatestNG.ModelGroup = '${Model}'
+ORDER BY
+    LatestNG.[MfgDate] DESC,
+    LatestNG.ModelGroup asc,
+    LatestNG.Item_No asc,
     Line asc,
     [MO] ASC`);
       }
       else if(Model != "**ALL**" && Molot != "-") {
-        var result = await user.sequelize.query(`WITH LatestNG AS (
-    SELECT 
+        var result = await user.sequelize.query(` WITH LatestNG AS (
+    SELECT
         [NG_Detail].[MfgDate],
         [ModelGroup],
         [Item_No],
@@ -415,12 +426,12 @@ ORDER BY
         SUM([NG_Detail].[Qty]) AS [Qty],
         [NG_Detail].[TimeStamp],
         ROW_NUMBER() OVER (PARTITION BY [NG_Detail].[MO] ORDER BY [NG_Detail].[TimeStamp] DESC) AS RowNum
-    FROM 
+    FROM
         [NG_Lot_Record].[dbo].[NG_Detail]
-    INNER JOIN 
-        [NG_Lot_Record].[dbo].[Register_MO] 
+    INNER JOIN
+        [NG_Lot_Record].[dbo].[Register_MO]
         ON [NG_Detail].[MO] = [Register_MO].[MO]
-    GROUP BY 
+    GROUP BY
         [NG_Detail].[MfgDate],
         [ModelGroup],
         [Item_No],
@@ -431,7 +442,7 @@ ORDER BY
 ),
 
 RawActual AS (
-    SELECT 
+    SELECT
         [Model],
         [Line],
         [MO],
@@ -442,20 +453,20 @@ RawActual AS (
         [MfgDate],
         [Remark],
         ROW_NUMBER() OVER (PARTITION BY [Motor] ORDER BY [TimeStamp] DESC) AS RowNum
-    FROM 
+    FROM
         [NG_Lot_Record].[dbo].[RW_SC]
 ),
 
 ACTUAL AS (
-    SELECT 
+    SELECT
         [MO],
         SUM([Qty]) AS Actual_receive
-    FROM 
-        RawActual 
-    WHERE 
-        RowNum = 1 
+    FROM
+        RawActual
+    WHERE
+        RowNum = 1
         AND Remark IS NULL
-    GROUP BY 
+    GROUP BY
         [Model],
         [Line],
         [MO],
@@ -466,64 +477,68 @@ ACTUAL AS (
 ),
 
 CTE AS (
-    SELECT 
+    SELECT
         [MO],
         [Status],
         SUM([Qty]) AS QTY
-    FROM 
+    FROM
         [NG_Lot_Record].[dbo].[History_InOut]
-    WHERE 
+    WHERE
         Remark IS NULL
         AND [Status] IN ('O', 'I') -- Only Status 'O' and 'I'
-    GROUP BY 
+    GROUP BY
         [MO],
         [Status]
 ),
 
 Testing AS (
-    SELECT 
+    SELECT
         CTE_O.[MO],
         COALESCE(CTE_O.QTY, 0) AS QTY_Status_O,
         COALESCE(CTE_I.QTY, 0) AS QTY_Status_I,
         COALESCE(CTE_O.QTY, 0) - COALESCE(CTE_I.QTY, 0) AS For_Other_Testing
-    FROM 
+    FROM
         (SELECT [MO], QTY FROM CTE WHERE [Status] = 'O') CTE_O
-    LEFT JOIN 
+    LEFT JOIN
         (SELECT [MO], QTY FROM CTE WHERE [Status] = 'I') CTE_I
-    ON 
+    ON
         CTE_O.[MO] = CTE_I.[MO]
 )
 
-SELECT 
-    [MfgDate] as Date ,
-    [ModelGroup],
-    [Item_No],
-    [Line],
-    LatestNG.[MO] as MO,
-    [Emp],
-    [Qty] AS NG_total,
-    CASE 
+SELECT
+[Inventory_Month],
+    LatestNG.[MfgDate] as Date ,
+	State,
+    LatestNG.[ModelGroup],
+    LatestNG.[Item_No],
+       'L' +LatestNG.[Line] as Line,
+    LatestNG.[MO],
+    LatestNG.[Emp],
+    LatestNG.[Qty] AS NG_total,
+    CASE
         WHEN Actual_receive IS NULL THEN 0
-        ELSE Actual_receive  
+        ELSE Actual_receive
     END AS Actual_receive,
-    CASE 
+    CASE
         WHEN For_Other_Testing IS NULL THEN 0
-        ELSE For_Other_Testing  
+        ELSE For_Other_Testing
     END AS For_Other_Testing
-FROM 
+FROM
     LatestNG
-LEFT JOIN 
+LEFT JOIN
     ACTUAL ON LatestNG.MO = ACTUAL.MO
-LEFT JOIN 
+LEFT JOIN
     Testing ON LatestNG.MO = Testing.MO
+LEFT JOIN [NG_Lot_Record].[dbo].[Register_MO] on LatestNG.MO = Register_MO.MO 
+LEFT JOIN [NG_Lot_Record].[dbo].[Separation_Inventory] on LatestNG.MO = [Separation_Inventory].MO 
 WHERE 
     RowNum = 1 
-    and MfgDate between '${Startdate}' and '${Finishdate}'
-    and  ModelGroup = '${Model}' and LatestNG.[MO] = '${Molot}'
-ORDER BY 
-    [MfgDate] DESC,
-    ModelGroup asc,
-    Item_No asc,
+    and LatestNG.MfgDate between '${Startdate}' and '${Finishdate}'
+    and  LatestNG.ModelGroup = '${Model}' and LatestNG.[MO] = '${Molot}'
+ORDER BY
+    LatestNG.[MfgDate] DESC,
+    LatestNG.ModelGroup asc,
+    LatestNG.Item_No asc,
     Line asc,
     [MO] ASC`);
       }
@@ -556,7 +571,7 @@ router.get("/DetailNGlot/:Model/:Startdate/:Finishdate/:Molot", async (req, res)
         [NG_Detail].[MfgDate],
         [ModelGroup],
         [Item_No],
-        [Line],
+         Line,
         [NG_Detail].[MO],
         [NG_Case],
         [NG_Detail].[Qty],
@@ -574,7 +589,7 @@ SELECT
     [MfgDate] as Date,
     [ModelGroup],
     [Item_No],
-    [Line],
+       'L'+[Line] as Line,
     [MO],
     [NG_Case],
     [Qty] as QTY,
@@ -618,7 +633,7 @@ SELECT
     [MfgDate] as Date,
     [ModelGroup],
     [Item_No],
-    [Line],
+       'L'+[Line] as Line,
     [MO],
     [NG_Case],
     [Qty],
@@ -628,8 +643,7 @@ SELECT
 FROM 
     LatestNG
 WHERE 
-   MfgDate between '${Startdate}' and '${Finishdate}'
-    and  MO = '${Molot}'
+  MO = '${Molot}'
 ORDER BY 
      [MfgDate] DESC,
     ModelGroup asc,
@@ -663,7 +677,7 @@ SELECT
     [MfgDate] as Date,
     [ModelGroup],
     [Item_No],
-    [Line],
+       'L'+[Line] as Line,
     [MO],
     [NG_Case],
     [Qty],
@@ -706,7 +720,7 @@ SELECT
     [MfgDate] as Date,
     [ModelGroup],
     [Item_No],
-    [Line],
+       'L'+[Line] as Line,
     [MO],
     [NG_Case],
     [Qty],
@@ -750,7 +764,7 @@ router.get("/TakeoutNGlot/:Model/:Startdate/:Finishdate/:Molot", async (req, res
     const { Model,Molot,Startdate,Finishdate } = req.params;
       if (Model == "**ALL**" && Molot == "-") {
       var result = await user.sequelize.query(`SELECT [Model]
-      ,[Line]
+      ,   'L'+[Line] as Line
       ,[MO]
       ,[Reason]
       ,[Motor]
@@ -775,7 +789,7 @@ ORDER BY
     }
      else if (Model == "**ALL**" && Molot != "-") {
       var result = await user.sequelize.query(`SELECT [Model]
-      ,[Line]
+      , 'L'+[Line] as Line
       ,[MO]
       ,[Reason]
       ,[Motor]
@@ -789,8 +803,7 @@ ORDER BY
   FROM [NG_Lot_Record].[dbo].[History_InOut]
 
 WHERE 
-    MfgDate between '${Startdate}' and '${Finishdate}'
-    and  MO = '${Molot}'
+      MO = '${Molot}'
 ORDER BY 
    [MfgDate] DESC,
     Model asc,
@@ -801,7 +814,7 @@ ORDER BY
     }
       else if(Model != "**ALL**" && Molot == "-") {
         var result = await user.sequelize.query(`SELECT [Model]
-      ,[Line]
+      , 'L'+[Line] as Line
       ,[MO]
       ,[Reason]
       ,[Motor]
@@ -825,7 +838,7 @@ ORDER BY
       }
       else if(Model != "**ALL**" && Molot != "-") {
         var result = await user.sequelize.query(`SELECT [Model]
-      ,[Line]
+      , 'L'+[Line] as Line
       ,[MO]
       ,[Reason]
       ,[Motor]
