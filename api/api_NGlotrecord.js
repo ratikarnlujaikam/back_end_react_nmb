@@ -829,7 +829,7 @@ ORDER BY
 
 WHERE 
     MfgDate between '${Startdate}' and '${Finishdate}'
-    and  ModelGroup = '${Model}'
+    and  Model = '${Model}'
 ORDER BY 
     [MfgDate] DESC,
     Model asc,
@@ -853,7 +853,7 @@ ORDER BY
 
 WHERE 
    MfgDate between '${Startdate}' and '${Finishdate}'
-    and  ModelGroup = '${Model}' and [MO] = '${Molot}'
+    and  Model = '${Model}' and [MO] = '${Molot}'
 ORDER BY 
     [MfgDate] DESC,
     Model asc,
