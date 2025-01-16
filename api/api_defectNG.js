@@ -127,13 +127,13 @@ router.get("/DefectNG/:Model/:insType/:year/:Month", async (req, res) => {
               from BB)
 
           ,DD (d1,d2,d3,d4) as (
-          SELECT [InspectionDate],[QAInspection].[dbo].[tbQANumber].[QANumber],[Lotsize],[SamplingQTY]
+          SELECT [InspectionDate],[QAInspection].[dbo].[tbQANumber].[QANumber],sum(MOQTY),[SamplingQTY]
             FROM [QAInspection].[dbo].[tbVisualInspection]
             full join [QAInspection].[dbo].[tbQANumber]on [QAInspection].[dbo].[tbVisualInspection].[QANumber]=[QAInspection].[dbo].[tbQANumber].[QANumber]
             where [Vis_Round]='1'
             and Month([InspectionDate])='${Month}'and year([InspectionDate])='${year}'
 
-            GROUP BY [InspectionDate], [QAInspection].[dbo].[tbQANumber].[QANumber],[Lotsize],[SamplingQTY],[InspectionType]
+            GROUP BY [InspectionDate], [QAInspection].[dbo].[tbQANumber].[QANumber],[SamplingQTY],[InspectionType]
           )
 
       --finalsampling Total_inspection,Total_sampling
@@ -464,14 +464,14 @@ order by date
               from BB)
 
           ,DD (d1,d2,d3,d4) as (
-          SELECT [InspectionDate],[QAInspection].[dbo].[tbQANumber].[QANumber],[Lotsize],[SamplingQTY]
+          SELECT [InspectionDate],[QAInspection].[dbo].[tbQANumber].[QANumber],sum(MOQTY),[SamplingQTY]
             FROM [QAInspection].[dbo].[tbVisualInspection]
             full join [QAInspection].[dbo].[tbQANumber]on [QAInspection].[dbo].[tbVisualInspection].[QANumber]=[QAInspection].[dbo].[tbQANumber].[QANumber]
             where [Vis_Round]='1'
        
             and Month([InspectionDate])='${Month}'and year([InspectionDate])='${year}'and [InspectionType]='${insType}'
 
-            GROUP BY [InspectionDate], [QAInspection].[dbo].[tbQANumber].[QANumber],[Lotsize],[SamplingQTY],[InspectionType]
+            GROUP BY [InspectionDate], [QAInspection].[dbo].[tbQANumber].[QANumber],[SamplingQTY],[InspectionType]
           )
 
       --finalsampling Total_inspection,Total_sampling
@@ -802,14 +802,14 @@ order by date
               from BB)
 
           ,DD (d1,d2,d3,d4) as (
-          SELECT [InspectionDate],[QAInspection].[dbo].[tbQANumber].[QANumber],[Lotsize],[SamplingQTY]
+          SELECT [InspectionDate],[QAInspection].[dbo].[tbQANumber].[QANumber],sum(MOQTY),[SamplingQTY]
             FROM [QAInspection].[dbo].[tbVisualInspection]
             full join [QAInspection].[dbo].[tbQANumber]on [QAInspection].[dbo].[tbVisualInspection].[QANumber]=[QAInspection].[dbo].[tbQANumber].[QANumber]
             where [Vis_Round]='1'
        
             and Month([InspectionDate])='${Month}'and year([InspectionDate])='${year}'and [Model_Name]='${Model}'
 
-            GROUP BY [InspectionDate], [QAInspection].[dbo].[tbQANumber].[QANumber],[Lotsize],[SamplingQTY],[InspectionType]
+            GROUP BY [InspectionDate], [QAInspection].[dbo].[tbQANumber].[QANumber],[SamplingQTY],[InspectionType]
           )
 
       --finalsampling Total_inspection,Total_sampling
@@ -1140,14 +1140,14 @@ order by date
                   from BB)
 
               ,DD (d1,d2,d3,d4) as (
-              SELECT [InspectionDate],[QAInspection].[dbo].[tbQANumber].[QANumber],[Lotsize],[SamplingQTY]
+              SELECT [InspectionDate],[QAInspection].[dbo].[tbQANumber].[QANumber],sum(MOQTY),[SamplingQTY]
                 FROM [QAInspection].[dbo].[tbVisualInspection]
                 full join [QAInspection].[dbo].[tbQANumber]on [QAInspection].[dbo].[tbVisualInspection].[QANumber]=[QAInspection].[dbo].[tbQANumber].[QANumber]
                 where [Vis_Round]='1'
            
                 and Month([InspectionDate])='${Month}'and year([InspectionDate])='${year}'and [InspectionType]='${insType}'and [Model_Name]='${Model}'
 
-                GROUP BY [InspectionDate], [QAInspection].[dbo].[tbQANumber].[QANumber],[Lotsize],[SamplingQTY],[InspectionType]
+                GROUP BY [InspectionDate], [QAInspection].[dbo].[tbQANumber].[QANumber],[SamplingQTY],[InspectionType]
               )
 
           --finalsampling Total_inspection,Total_sampling

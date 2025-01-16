@@ -65,8 +65,8 @@ RawActual AS (
         [Emp],
         [TimeStamp],
         [MfgDate],
-        [Remark],
-        ROW_NUMBER() OVER (PARTITION BY [Motor] ORDER BY [TimeStamp] DESC) AS RowNum
+        [Remark]
+      
     FROM
         [NG_Lot_Record].[dbo].[RW_SC]
 ),
@@ -78,8 +78,8 @@ ACTUAL AS (
     FROM
         RawActual
     WHERE
-        RowNum = 1
-        AND Remark IS NULL
+       
+       Remark IS NULL
     GROUP BY
         [Model],
         [Line],
@@ -194,8 +194,8 @@ RawActual AS (
         [Emp],
         [TimeStamp],
         [MfgDate],
-        [Remark],
-        ROW_NUMBER() OVER (PARTITION BY [Motor] ORDER BY [TimeStamp] DESC) AS RowNum
+        [Remark]
+       
     FROM
         [NG_Lot_Record].[dbo].[RW_SC]
 ),
@@ -207,8 +207,8 @@ ACTUAL AS (
     FROM
         RawActual
     WHERE
-        RowNum = 1
-        AND Remark IS NULL
+       
+        Remark IS NULL
     GROUP BY
         [Model],
         [Line],
@@ -323,8 +323,8 @@ RawActual AS (
         [Emp],
         [TimeStamp],
         [MfgDate],
-        [Remark],
-        ROW_NUMBER() OVER (PARTITION BY [Motor] ORDER BY [TimeStamp] DESC) AS RowNum
+        [Remark]
+       
     FROM
         [NG_Lot_Record].[dbo].[RW_SC]
 ),
@@ -336,8 +336,7 @@ ACTUAL AS (
     FROM
         RawActual
     WHERE
-        RowNum = 1
-        AND Remark IS NULL
+        Remark IS NULL
     GROUP BY
         [Model],
         [Line],
@@ -451,8 +450,7 @@ RawActual AS (
         [Emp],
         [TimeStamp],
         [MfgDate],
-        [Remark],
-        ROW_NUMBER() OVER (PARTITION BY [Motor] ORDER BY [TimeStamp] DESC) AS RowNum
+        [Remark]
     FROM
         [NG_Lot_Record].[dbo].[RW_SC]
 ),
@@ -464,8 +462,7 @@ ACTUAL AS (
     FROM
         RawActual
     WHERE
-        RowNum = 1
-        AND Remark IS NULL
+       Remark IS NULL
     GROUP BY
         [Model],
         [Line],

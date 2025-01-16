@@ -80,9 +80,6 @@ app.use("/api/HOME", require("./api/api_HOME"));
 app.use("/api/MLranking", require("./api/api_MLranking"));
 app.use("/api/trace_back_ng", require("./api/api_trace_back_ng"));
 app.use("/api/MC_Error_Month", require("./api/api_MC_Error_Month"));
-
-
-
 app.use("/api/Master_ML", require("./api/api_Master_ML"));
 app.use("/api/store_issue", require("./api/api_store_issue"));
 app.use("/api/Trace_Dynamic", require("./api/api_Trace_Dynamic_parallelirm"));
@@ -125,6 +122,7 @@ app.use("/api/DBMaster",require("./api/api_DBmaster"));
 
 // Server.js
 app.use("/api/NGlotrecord",require("./api/api_NGlotrecord"));
+app.use("/api/NGrationmonitoring",require("./api/api_NGrationmonitoring"));
 //NAS
 const Url = "192.168.101.13";
 const MailUrl = "192.168.101.120"

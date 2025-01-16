@@ -112,14 +112,14 @@ router.get("/LARMonth/:Model/:insType/:year",
          from BB)
 
      ,DD (d1,d2,d3,d4) as (
-     SELECT month([InspectionDate]),[QAInspection].[dbo].[tbQANumber].[QANumber],sum(MOQTY),[SamplingQTY]
+     SELECT month([InspectionDate]),[QAInspection].[dbo].[tbQANumber].[QANumber],[Lotsize],[SamplingQTY]
        FROM [QAInspection].[dbo].[tbVisualInspection]
        full join [QAInspection].[dbo].[tbQANumber]on [QAInspection].[dbo].[tbVisualInspection].[QANumber]=[QAInspection].[dbo].[tbQANumber].[QANumber]
        where [Vis_Round]='1'
      
                   and year([InspectionDate])='${year}'
 
-       GROUP BY [InspectionDate], [QAInspection].[dbo].[tbQANumber].[QANumber],[SamplingQTY],[InspectionType]
+       GROUP BY [InspectionDate], [QAInspection].[dbo].[tbQANumber].[QANumber],[Lotsize],[SamplingQTY],[InspectionType]
      )
 
  --finalsampling Total_inspection,Total_sampling
@@ -362,14 +362,14 @@ router.get("/LARMonth/:Model/:insType/:year",
              from BB)
 
          ,DD (d1,d2,d3,d4) as (
-         SELECT month([InspectionDate]),[QAInspection].[dbo].[tbQANumber].[QANumber],sum(MOQTY),[SamplingQTY]
+         SELECT month([InspectionDate]),[QAInspection].[dbo].[tbQANumber].[QANumber],[Lotsize],[SamplingQTY]
            FROM [QAInspection].[dbo].[tbVisualInspection]
            full join [QAInspection].[dbo].[tbQANumber]on [QAInspection].[dbo].[tbVisualInspection].[QANumber]=[QAInspection].[dbo].[tbQANumber].[QANumber]
            where [Vis_Round]='1'
          
                       and year([InspectionDate])='${year}'and [InspectionType]='${insType}'
 
-           GROUP BY [InspectionDate], [QAInspection].[dbo].[tbQANumber].[QANumber],[SamplingQTY],[InspectionType]
+           GROUP BY [InspectionDate], [QAInspection].[dbo].[tbQANumber].[QANumber],[Lotsize],[SamplingQTY],[InspectionType]
          )
 
      --finalsampling Total_inspection,Total_sampling
@@ -612,14 +612,14 @@ router.get("/LARMonth/:Model/:insType/:year",
                from BB)
 
            ,DD (d1,d2,d3,d4) as (
-           SELECT month([InspectionDate]),[QAInspection].[dbo].[tbQANumber].[QANumber],sum(MOQTY),[SamplingQTY]
+           SELECT month([InspectionDate]),[QAInspection].[dbo].[tbQANumber].[QANumber],[Lotsize],[SamplingQTY]
              FROM [QAInspection].[dbo].[tbVisualInspection]
              full join [QAInspection].[dbo].[tbQANumber]on [QAInspection].[dbo].[tbVisualInspection].[QANumber]=[QAInspection].[dbo].[tbQANumber].[QANumber]
              where [Vis_Round]='1'
            
                         and year([InspectionDate])='${year}'and  [Model_Name]='${Model}'
 
-             GROUP BY [InspectionDate], [QAInspection].[dbo].[tbQANumber].[QANumber],[SamplingQTY],[InspectionType]
+             GROUP BY [InspectionDate], [QAInspection].[dbo].[tbQANumber].[QANumber],[Lotsize],[SamplingQTY],[InspectionType]
            )
 
        --finalsampling Total_inspection,Total_sampling
@@ -863,14 +863,14 @@ router.get("/LARMonth/:Model/:insType/:year",
                   from BB)
 
               ,DD (d1,d2,d3,d4) as (
-              SELECT month([InspectionDate]),[QAInspection].[dbo].[tbQANumber].[QANumber],sum(MOQTY),[SamplingQTY]
+              SELECT month([InspectionDate]),[QAInspection].[dbo].[tbQANumber].[QANumber],[Lotsize],[SamplingQTY]
                 FROM [QAInspection].[dbo].[tbVisualInspection]
                 full join [QAInspection].[dbo].[tbQANumber]on [QAInspection].[dbo].[tbVisualInspection].[QANumber]=[QAInspection].[dbo].[tbQANumber].[QANumber]
                 where [Vis_Round]='1'
               
                            and year([InspectionDate])='${year}'and [InspectionType]='${insType}'and [Model_Name]='${Model}'
 
-                GROUP BY [InspectionDate], [QAInspection].[dbo].[tbQANumber].[QANumber],[SamplingQTY],[InspectionType]
+                GROUP BY [InspectionDate], [QAInspection].[dbo].[tbQANumber].[QANumber],[Lotsize],[SamplingQTY],[InspectionType]
               )
 
           --finalsampling Total_inspection,Total_sampling
